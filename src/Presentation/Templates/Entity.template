@@ -1,0 +1,8 @@
+        public static string TypeName = typeof(TableName).ToString();
+
+        public void PopulateDictionary()
+        {
+            Dictionary = new Dictionary<string, dynamic>();
+        }
+
+        public Dictionary<string, dynamic> Dictionary { get; set; }

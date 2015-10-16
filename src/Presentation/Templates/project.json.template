@@ -1,0 +1,22 @@
+﻿{
+  "version": "1.0.0-*",
+  "description": "DAL Class Library",
+  "authors": [ "mika" ],
+  "tags": [ "" ],
+  "projectUrl": "",
+  "licenseUrl": "",
+
+  "dependencies": {
+    "EntityFramework.SqlServer": "7.0.0-beta7",
+    "EntityFramework.SqlServer.design": "7.0.0-beta7",
+    "EntityFramework.commands": "7.0.0-beta7"
+  },
+
+  "commands": {
+    "ef": "EntityFramework.commands"
+  },
+
+  "frameworks": {
+    "dnx451": { }
+  }
+}

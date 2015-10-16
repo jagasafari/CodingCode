@@ -1,0 +1,26 @@
+﻿@using System.Threading.Tasks
+@using Presentation.Controllers
+@using Presentation.Model
+@model Presentation.Model.TableViewModel
+
+<h3>@Model.TableName</h3>
+<table class="table">
+    <thead>
+        <tr>
+            @foreach (var columnName in Model.ColumnNames)
+            {
+                <td>@columnName</td>
+            }
+        </tr>
+    </thead>
+    @{ var tmp = Model.Values;}
+    @for (int i = 0; i <= tmp.GetUpperBound(0); i++)
+    {
+        <tr>
+            @for (int j = 0; j <= tmp.GetUpperBound(1); j++)
+            {
+                <td>@tmp[i, j]</td>
+            }
+        </tr>
+    }
+</table>

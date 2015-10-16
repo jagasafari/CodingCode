@@ -1,0 +1,6 @@
+		public string NamespaceName => AssemblyName;
+        public dynamic[] GetTable(string tableType)
+        {
+			
+            throw new Exception($"{tableType} entity type not found");
+        }
