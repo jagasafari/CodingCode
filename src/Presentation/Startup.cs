@@ -15,7 +15,7 @@
             IApplicationEnvironment appEnv )
         {
             var builder =
-                new ConfigurationBuilder( appEnv.ApplicationBasePath )
+                new ConfigurationBuilder().SetBasePath(appEnv.ApplicationBasePath)
                     .AddJsonFile( "config.json" )
                     .AddEnvironmentVariables();
             Configuration = builder.Build();
@@ -42,7 +42,7 @@
 
 
             app.UseBrowserLink();
-            app.UseErrorPage();
+            app.UseDeveloperExceptionPage();
             app.UseRuntimeInfoPage();
 
             app.UseStaticFiles();

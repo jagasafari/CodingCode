@@ -1,4 +1,4 @@
-﻿namespace Presentation.Controllers
+﻿namespace Presentation.Contracts
 {
     public class DalInfo
     {

@@ -3,25 +3,23 @@
   "version": "1.0.0-*",
 
   "dependencies": {
-    "Microsoft.AspNet.Diagnostics": "1.0.0-beta7",
-    "Microsoft.AspNet.Mvc": "6.0.0-beta7",
-    "Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-beta7",
-    "Microsoft.AspNet.Server.WebListener": "1.0.0-beta7",
-    "Microsoft.AspNet.StaticFiles": "1.0.0-beta7",
-    "Microsoft.AspNet.Tooling.Razor": "1.0.0-beta7",
-    "Microsoft.Framework.CodeGenerators.MVC": "1.0.0-beta7",
-    "Microsoft.Framework.Configuration.Json": "1.0.0-beta7",
-    "Microsoft.Framework.Logging": "1.0.0-beta7",
-    "Microsoft.Framework.Logging.Console": "1.0.0-beta7",
-    "Microsoft.Framework.Logging.Debug": "1.0.0-beta7",
-    "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0-beta7",
-    "EntityFramework.SqlServer": "7.0.0-beta7",
+    "Microsoft.AspNet.Diagnostics": "1.0.0-beta8",
+    "Microsoft.AspNet.Mvc": "6.0.0-beta8",
+    "Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-beta8",
+    "Microsoft.AspNet.Server.WebListener": "1.0.0-beta8",
+    "Microsoft.AspNet.StaticFiles": "1.0.0-beta8",
+    "Microsoft.AspNet.Tooling.Razor": "1.0.0-beta8",
+    "Microsoft.Framework.Configuration.Json": "1.0.0-beta8",
+    "Microsoft.Framework.Logging": "1.0.0-beta8",
+    "Microsoft.Framework.Logging.Console": "1.0.0-beta8",
+    "Microsoft.Framework.Logging.Debug": "1.0.0-beta8",
+    "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0-beta8",
+    "EntityFramework.SqlServer": "7.0.0-beta8",
     "Share": ""
   },
 
   "commands": {
-    "web": "Microsoft.AspNet.Hosting --config hosting.ini",
-    "gen": "Microsoft.Framework.CodeGeneration"
+    "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --ASPNET_ENV development --server.urls http://localhost:5000"
   },
 
   "frameworks": {

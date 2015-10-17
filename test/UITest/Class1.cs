@@ -26,13 +26,13 @@
 
         public void Dispose()
         {
-            TestWebApp.Dispose();
+           // TestWebApp.Dispose();
         }
 
         [Fact]
         public async void Test()
         {
-            await TestWebApp.InitialiseTestAsync();
+            //await TestWebApp.InitialiseTestAsync();
 
             for ( int i = 0; i < _numRandomTests; i++ )
             {

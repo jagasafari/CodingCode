@@ -7,9 +7,9 @@
   "licenseUrl": "",
 
   "dependencies": {
-    "EntityFramework.SqlServer": "7.0.0-beta7",
-    "EntityFramework.SqlServer.design": "7.0.0-beta7",
-    "EntityFramework.commands": "7.0.0-beta7"
+    "EntityFramework.SqlServer": "7.0.0-beta8",
+    "EntityFramework.SqlServer.design": "7.0.0-beta8",
+    "EntityFramework.commands": "7.0.0-beta8"
   },
 
   "commands": {

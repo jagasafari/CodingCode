@@ -12,7 +12,7 @@
                 "CustomerDemographics",
                 "Customers", "EmployeeTerritories", "Employees",
                 "Order_Details", "Orders", "Products", "Region",
-                "Shippers", "Suppliers", "Territories"
+                "Shippers", "Suppliers", "Territories", "sysdiagrams"
             };
             return tableNames;
         }
