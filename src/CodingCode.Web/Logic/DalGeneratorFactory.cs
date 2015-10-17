@@ -1,9 +1,7 @@
-﻿namespace CodingCode
+﻿namespace CodingCode.Logic
 {
     using System.IO;
     using Contracts;
-    using Controllers;
-    using Logic;
 
     public class DalGeneratorFactory : IDalGeneratorFactory
     {
