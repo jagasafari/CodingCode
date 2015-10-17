@@ -1,4 +1,4 @@
-﻿namespace Presentation
+﻿namespace CodingCode
 {
     using Contracts;
     using Logic;
@@ -25,7 +25,8 @@
 
         public void ConfigureServices( IServiceCollection services )
         {
-            services.AddMvc();
+            services.AddMvc().AddViewLocalization(options => options.ResourcesPath = "Resources"); 
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddSingleton( typeof ( DbContextWrapper ) );
             services.AddInstance( Configuration );
             services.AddScoped<IQueryRequestMapper, QueryRequestMapper>();
@@ -47,6 +48,7 @@
 
             app.UseStaticFiles();
 
+            app.UseRequestLocalization();
             app.UseMvc(
                 routes =>
                 {

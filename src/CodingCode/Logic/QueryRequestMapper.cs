@@ -1,11 +1,11 @@
-﻿namespace Presentation.Logic
+﻿namespace CodingCode.Logic
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
     using Contracts;
-    using Model;
+    using ViewModel;
 
     public class QueryRequestMapper : IQueryRequestMapper
     {

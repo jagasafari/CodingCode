@@ -1,7 +1,7 @@
-﻿namespace Presentation.Contracts
+﻿namespace CodingCode.Contracts
 {
     using System;
-    using Model;
+    using ViewModel;
 
     public interface IQueryRequestMapper
     {

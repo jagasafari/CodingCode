@@ -1,7 +1,7 @@
 ﻿namespace UnitTests
 {
-    using Presentation.Contracts;
-    using Presentation.Logic;
+    using CodingCode.Contracts;
+    using CodingCode.Logic;
     using Xunit;
 
     public class Class1

@@ -1,4 +1,4 @@
-﻿namespace Presentation.Logic
+﻿namespace CodingCode.Logic
 {
     using System;
     using System.Linq;

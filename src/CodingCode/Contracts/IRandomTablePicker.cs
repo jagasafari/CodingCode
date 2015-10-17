@@ -1,4 +1,4 @@
-﻿namespace Presentation.Contracts
+﻿namespace CodingCode.Contracts
 {
     using System;
     using Microsoft.Data.Entity;

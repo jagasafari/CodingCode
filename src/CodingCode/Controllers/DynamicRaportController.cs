@@ -1,13 +1,14 @@
-﻿namespace Presentation.Controllers
+﻿namespace CodingCode.Controllers
 {
     using System;
     using Contracts;
     using Logic;
+    using Microsoft.AspNet.Antiforgery;
     using Microsoft.AspNet.Mvc;
     using Microsoft.Dnx.Runtime;
-    using Model;
+    using ViewModel;
 
-    public class DynamicReportController : Controller
+    public class DynamicRaportController : Controller
     {
         private readonly IApplicationEnvironment _applicationEnvironment;
         private readonly IDalGeneratorFactory _dalGeneratorFactory;
@@ -16,7 +17,7 @@
         private readonly IRandomTablePicker _randomTablePicker;
 
 
-        public DynamicReportController(
+        public DynamicRaportController(
             DbContextWrapper dbContextWrapper,
             IQueryRequestMapper queryRequestMapper,
             IRandomTablePicker randomTablePicker,
@@ -32,8 +33,14 @@
 
         public IActionResult Index()
         {
-            var connection =
-                @"""Server=DELL\SQLEXPRESS;Database=Northwind;Trusted_Connection=True;MultipleActiveResultSets=true""";
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult RandomTable(DatabaseSettingsViewModel dbSettings)
+        {
+            var connection = dbSettings.ConnectionString;
             var assemblyName =
                 DalGenerator.GenerateAssemblyName(connection);
 

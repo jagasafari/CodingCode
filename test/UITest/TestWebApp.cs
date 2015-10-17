@@ -51,7 +51,7 @@
                         Directory.GetParent( currentDirectory ).FullName );
                 var presentationPath = Path.Combine(
                     directoryInfo.FullName,
-                    "src", "Presentation" );
+                    "src", "CodingCode" );
                 Directory.SetCurrentDirectory( presentationPath );
 
                 _processExecutor.Execute(

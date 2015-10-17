@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNet.Mvc;
 
-namespace Presentation.Controllers
+namespace CodingCode.Controllers
 {
     public class HomeController : Controller
     {

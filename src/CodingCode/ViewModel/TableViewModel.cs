@@ -1,4 +1,4 @@
-namespace Presentation.Model
+namespace CodingCode.ViewModel
 {
     public class TableViewModel
     {

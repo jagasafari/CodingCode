@@ -1,4 +1,4 @@
-﻿namespace Presentation
+﻿namespace CodingCode
 {
     using System.IO;
     using Contracts;
@@ -19,7 +19,7 @@
                 dalDirectoryParent, DalInfo.AssemblyName);
 
             var templateDirectory = Path.Combine(
-                Directory.GetParent(dalDirectory).FullName, "Presentation",
+                Directory.GetParent(dalDirectory).FullName, "CodingCode",
                 "Templates");
 
             return new DalGenerator
