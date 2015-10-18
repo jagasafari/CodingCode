@@ -1,4 +1,4 @@
-﻿namespace CodingCode.Logic
+﻿namespace CodingCode.Web.Logic
 {
     using System;
     using System.Collections.Generic;
@@ -9,11 +9,11 @@
 
     public class QueryRequestMapper : IQueryRequestMapper
     {
-        public TableViewModel MapToViewModel( Type randomType,
-            dynamic dbContext )
+        public TableViewModel MapToViewModel(Type randomType,
+            dynamic dbContext)
         {
-            var colNames = GetColumnNames( randomType );
-            var tableValues = GetValues( randomType, colNames, dbContext );
+            var colNames = GetColumnNames(randomType);
+            var tableValues = GetValues(randomType, colNames, dbContext);
 
             return new TableViewModel
             {
@@ -23,7 +23,7 @@
             };
         }
 
-        private static string[] GetColumnNames( Type randomType )
+        private static string[] GetColumnNames(Type randomType)
         {
             var propertyInfos = randomType.GetTypeInfo().GetProperties();
             var colNames = ( from propertyInfo in propertyInfos
@@ -32,22 +32,22 @@
             return colNames;
         }
 
-        private string[,] GetValues( Type randomType,
-            IReadOnlyList<string> colNames, dynamic dbContext )
+        private string[,] GetValues(Type randomType,
+            IReadOnlyList<string> colNames, dynamic dbContext)
         {
-            var table = dbContext.GetTable( randomType.ToString() );
+            var table = dbContext.GetTable(randomType.ToString());
             var ts = table.Length;
             var numRows = ts > 50 ? 50 : ts;
             var tableValues = new string[numRows, colNames.Count];
-            for ( var i = 0; i < numRows; i++ )
+            for(var i = 0; i < numRows; i++)
             {
                 table[i].PopulateDictionary();
-                for ( var j = 0; j < colNames.Count; j++ )
+                for(var j = 0; j < colNames.Count; j++)
                 {
                     dynamic o = table[i].Dictionary[colNames[j]];
                     tableValues[i, j] = o == null
                         ? ""
-                        : string.Format( "{0}", o );
+                        : string.Format("{0}", o);
                 }
             }
             return tableValues;

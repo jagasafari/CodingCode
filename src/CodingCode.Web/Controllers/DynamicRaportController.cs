@@ -1,9 +1,9 @@
-﻿namespace CodingCode.Controllers
+﻿namespace CodingCode.Web.Controllers
 {
     using System;
+    using System.Threading.Tasks;
     using Contracts;
     using Logic;
-    using Microsoft.AspNet.Antiforgery;
     using Microsoft.AspNet.Mvc;
     using Microsoft.Dnx.Runtime;
     using ViewModel;
@@ -15,7 +15,6 @@
         private readonly DbContextWrapper _dbContextWrapper;
         private readonly IQueryRequestMapper _queryRequestMapper;
         private readonly IRandomTablePicker _randomTablePicker;
-
 
         public DynamicRaportController(
             DbContextWrapper dbContextWrapper,
@@ -31,30 +30,20 @@
             _dalGeneratorFactory = dalGeneratorFactory;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult RandomTable(DatabaseSettingsViewModel dbSettings)
+        public async Task<IActionResult> CodeDatabaseModel(DalInfoViewModel dalInfo)
         {
-            var connection = dbSettings.ConnectionString;
             var assemblyName =
-                DalGenerator.GenerateAssemblyName(connection);
+                DalGenerator.GenerateAssemblyName(dalInfo.ConnectionString);
+            dalInfo.AssemblyName = assemblyName;
 
             if (!_dbContextWrapper.Exists(assemblyName))
             {
-                var dalInfo = new DalInfo
-                {
-                    ConnectionString = connection,
-                    AssemblyName = assemblyName,
-                    DatabaseName = "Northwind",
-                    AssemblyBasePath =
-                        _applicationEnvironment.ApplicationBasePath
-                };
-                _dalGeneratorFactory.DalInfo = dalInfo;
+                dalInfo.AssemblyBasePath =
+                    _applicationEnvironment.ApplicationBasePath;
+                dalInfo.DatabaseName = "Northwind";
+                _dalGeneratorFactory.DalInfoViewModel = dalInfo;
 
                 using (
                     var dalGenerator = _dalGeneratorFactory.Create())
@@ -63,21 +52,26 @@
 
                     dalGenerator.CopyProjectJson();
 
-                    dalGenerator.Restore();
+                    await dalGenerator.RestoreAsync();
 
-                    dalGenerator.Scaffold();
+                    await dalGenerator.ScaffoldAsync();
 
                     dalGenerator.CodeContext();
 
-                    dalGenerator.CodeEntities();
+                    await dalGenerator.CodeEntitiesAsync();
 
-                    dalGenerator.Build();
+                    await dalGenerator.BuildAsync();
 
                     _dbContextWrapper[assemblyName] =
                         dalGenerator.InstantiateDbContext();
                 }
             }
+            return View(dalInfo);
+        }
 
+        [HttpGet, ActionName("RandomTable")]
+        public IActionResult RandomTable(string assemblyName)
+        {
             Type randomType =
                 _randomTablePicker.GetRandomTable(
                     _dbContextWrapper[assemblyName]);

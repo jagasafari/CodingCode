@@ -1,13 +1,13 @@
 ﻿namespace CodingCode
 {
-    using Contracts;
-    using Logic;
     using Microsoft.AspNet.Builder;
     using Microsoft.AspNet.Hosting;
     using Microsoft.Dnx.Runtime;
     using Microsoft.Framework.Configuration;
     using Microsoft.Framework.DependencyInjection;
     using Microsoft.Framework.Logging;
+    using Web.Contracts;
+    using Web.Logic;
 
     public class Startup
     {

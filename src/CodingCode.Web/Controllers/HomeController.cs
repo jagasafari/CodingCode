@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNet.Mvc;
-
-namespace CodingCode.Controllers
+﻿namespace CodingCode.Web.Controllers
 {
+    using Microsoft.AspNet.Mvc;
+
     public class HomeController : Controller
     {
         public IActionResult Index()

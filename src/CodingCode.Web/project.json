@@ -15,7 +15,7 @@
     "Microsoft.Framework.Logging.Debug": "1.0.0-beta8",
     "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0-beta8",
     "EntityFramework.SqlServer": "7.0.0-beta8",
-    "Share": ""
+    "CodingCode.Common": ""
   },
 
   "commands": {

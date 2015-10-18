@@ -1,4 +1,4 @@
-﻿namespace CodingCode.Logic
+﻿namespace CodingCode.Web.Logic
 {
     using System;
     using System.Collections.Generic;

@@ -1,10 +1,8 @@
-﻿namespace Share
+﻿namespace CodingCode.Common
 {
     using System;
     using System.Diagnostics;
-    using System.IO;
     using System.Text;
-    using System.Threading;
     using Contracts;
 
     public class ProcessExecutor : IDnxProcess, IDisposable
@@ -61,7 +59,8 @@
             ProcessInstance.BeginErrorReadLine();
         }
 
-        public static void ExecuteAndWait(string programPath, string arguments,
+        public static void ExecuteAndWait(string programPath,
+            string arguments,
             Func<string, bool> failurePredicate)
         {
             var dnxProcess = new ProcessExecutor
@@ -79,10 +78,12 @@
                     $"Execution of {nameof(dnxProcess)}: {programPath} with arguments:" +
                     $" {arguments} hasn't completed. {result}");
             if(failurePredicate(result))
-                throw new Exception($"Command {programPath} failed {result}");
+                throw new Exception(
+                    $"Command {programPath} failed {result}");
         }
 
-        public static void ExecuteInShellAndWait(string dnxProcessPath, string arguments)
+        public static void ExecuteInShellAndWait(string dnxProcessPath,
+            string arguments)
         {
             var processStartInfo = new ProcessStartInfo
             {
@@ -92,7 +93,8 @@
             var process = new ProcessExecutor
             {
                 ExpectedExit = true,
-                ProcessInstance = new Process {StartInfo = processStartInfo}
+                ProcessInstance =
+                    new Process {StartInfo = processStartInfo}
             };
             process.ProcessInstance.Start();
             process.ProcessInstance.WaitForExit();

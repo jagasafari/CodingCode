@@ -1,7 +1,6 @@
 ﻿namespace UnitTests
 {
-    using CodingCode.Contracts;
-    using CodingCode.Logic;
+    using CodingCode.Web.Logic;
     using Xunit;
 
     public class Class1

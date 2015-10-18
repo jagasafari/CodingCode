@@ -1,17 +1,18 @@
-﻿namespace CodingCode.Contracts
+﻿namespace CodingCode.Web.Contracts
 {
     using System;
+    using System.Threading.Tasks;
 
     public interface IDalGenerator : IDisposable
     {
         new void Dispose();
         void CreateDalDirectory();
         void CopyProjectJson();
-        void Restore();
-        void Scaffold();
+        Task RestoreAsync();
+        Task ScaffoldAsync();
         void CodeContext();
-        void CodeEntities();
-        void Build();
+        Task CodeEntitiesAsync();
+        Task BuildAsync();
         dynamic InstantiateDbContext();
     }
 }

@@ -1,11 +1,11 @@
-namespace CodingCode.Contracts
+namespace CodingCode.Web.Contracts
 {
-    using Controllers;
     using Logic;
+    using ViewModel;
 
     public interface IDalGeneratorFactory
     {
-        DalInfo DalInfo { get; set; }
+        DalInfoViewModel DalInfoViewModel { get; set; }
         DalGenerator Create();
     }
 }

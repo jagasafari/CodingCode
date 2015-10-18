@@ -1,4 +1,4 @@
-﻿namespace Share.Contracts
+﻿namespace CodingCode.Common.Contracts
 {
     using System.Diagnostics;
 

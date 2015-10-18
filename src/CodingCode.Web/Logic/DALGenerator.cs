@@ -1,4 +1,4 @@
-﻿namespace CodingCode.Logic
+﻿namespace CodingCode.Web.Logic
 {
     using System;
     using System.Collections.Generic;
@@ -7,8 +7,9 @@
     using System.Reflection;
     using System.Text;
     using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
     using Contracts;
-    using Share;
+    using CodingCode.Common;
 
     public class DalGenerator : IDalGenerator
     {
@@ -50,19 +51,19 @@
             File.Copy(templatePath, destiantionPath);
         }
 
-        public void Restore()
+        public async Task RestoreAsync()
         {
-            ProcessExecutor.ExecuteAndWait(_dnuPath, "restore",
-                x => x.Contains("Error"));
+            await Task.Factory.StartNew(()=>ProcessExecutor.ExecuteAndWait(_dnuPath, "restore",
+                x => x.Contains("Error")));
         }
 
-        public void Scaffold()
+        public async Task ScaffoldAsync()
         {
             var dnxProcessPath = Path.Combine(DnxTool.GetDnxPath(),
                 "dnx.exe");
             var command =
                 $"ef dbcontext scaffold {ConnectionString} EntityFramework.SqlServer";
-            ProcessExecutor.ExecuteInShellAndWait(dnxProcessPath, command);
+            await Task.Factory.StartNew(()=>ProcessExecutor.ExecuteInShellAndWait(dnxProcessPath, command));
             var contextFileName = $"{DatabaseName}Context.cs";
             if(! File.Exists(Path.Combine(DalDirectory, contextFileName)))
                 throw new Exception("Scaffold failed!");
@@ -82,7 +83,7 @@
                 var regex =
                     new Regex(
                         @"public virtual DbSet<(.*)> (\1) { get; set; }");
-                for(var i = 0; i < efScaffoldCode.Length - 2; i++)
+                for (var i = 0; i < efScaffoldCode.Length - 2; i++)
                 {
                     streamWriter.WriteLine(efScaffoldCode[i]);
                     var match = regex.Match(efScaffoldCode[i]);
@@ -96,9 +97,9 @@
             }
         }
 
-        public void CodeEntities()
+        public async Task CodeEntitiesAsync()
         {
-            foreach(var table in _tables)
+            await Task.Factory.StartNew(()=>Parallel.ForEach(_tables, table =>
             {
                 var entityFile = Path.Combine(DalDirectory,
                     $"{table}.cs");
@@ -119,13 +120,13 @@
                     streamWriter.WriteLine("    }");
                     streamWriter.WriteLine("}");
                 }
-            }
+            }));
         }
 
-        public void Build()
+        public async Task BuildAsync()
         {
-            ProcessExecutor.ExecuteAndWait(_dnuPath, "build",
-                x => ! x.Contains("Build succeeded"));
+            await Task.Factory.StartNew(()=>ProcessExecutor.ExecuteAndWait(_dnuPath, "build",
+                x => ! x.Contains("Build succeeded")));
         }
 
         public dynamic InstantiateDbContext()

@@ -1,6 +1,6 @@
-﻿namespace CodingCode.Contracts
+﻿namespace CodingCode.Web.ViewModel
 {
-    public class DalInfo
+    public class DalInfoViewModel
     {
         public string ConnectionString { get; set; }
         public string AssemblyName { get; set; }

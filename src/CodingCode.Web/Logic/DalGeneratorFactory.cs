@@ -1,30 +1,31 @@
-﻿namespace CodingCode.Logic
+﻿namespace CodingCode.Web.Logic
 {
     using System.IO;
     using Contracts;
+    using ViewModel;
 
     public class DalGeneratorFactory : IDalGeneratorFactory
     {
-        public DalInfo DalInfo { get; set; }
+        public DalInfoViewModel DalInfoViewModel { get; set; }
 
         public DalGenerator Create()
         {
             var dalDirectoryParent =
-                Directory.GetParent(DalInfo.AssemblyBasePath)
+                Directory.GetParent(DalInfoViewModel.AssemblyBasePath)
                     .FullName;
 
             var dalDirectory = Path.Combine(
-                dalDirectoryParent, DalInfo.AssemblyName);
+                dalDirectoryParent, DalInfoViewModel.AssemblyName);
 
             var templateDirectory = Path.Combine(
-                Directory.GetParent(dalDirectory).FullName, "CodingCode",
+                Directory.GetParent(dalDirectory).FullName, "CodingCode.Web",
                 "Templates");
 
             return new DalGenerator
             {
-                DatabaseName = DalInfo.DatabaseName,
-                AssemblyName = DalInfo.AssemblyName,
-                ConnectionString = DalInfo.ConnectionString,
+                DatabaseName = DalInfoViewModel.DatabaseName,
+                AssemblyName = DalInfoViewModel.AssemblyName,
+                ConnectionString = DalInfoViewModel.ConnectionString,
                 DalDirectory = dalDirectory,
                 TemplateDirectory = templateDirectory
             };

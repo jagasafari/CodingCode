@@ -1,4 +1,4 @@
-﻿namespace Share
+﻿namespace CodingCode.Common
 {
     using System;
 
