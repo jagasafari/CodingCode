@@ -6,7 +6,7 @@
     using Logic;
     using Microsoft.AspNet.Mvc;
     using Microsoft.Dnx.Runtime;
-    using ViewModel;
+    using ViewModels;
 
     public class DynamicRaportController : Controller
     {

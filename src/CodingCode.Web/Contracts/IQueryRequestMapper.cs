@@ -1,7 +1,7 @@
 ﻿namespace CodingCode.Web.Contracts
 {
     using System;
-    using ViewModel;
+    using ViewModels;
 
     public interface IQueryRequestMapper
     {

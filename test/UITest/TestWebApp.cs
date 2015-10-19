@@ -1,7 +1,7 @@
 ﻿namespace UITest
 {
     using System;
-    using System.Diagnostics;
+    using System.Collections.Generic;
     using System.IO;
     using System.Net.Http;
     using System.Threading.Tasks;
@@ -9,56 +9,73 @@
 
     public class TestWebApp : IDisposable
     {
-        private readonly ProcessExecutor _processExecutor;
-
-        public TestWebApp()
-        {
-            _processExecutor = new ProcessExecutor
-            {
-                ProcessInstance = new Process(),
-                ExpectedExit = false
-            };
-        }
-
         public HttpClient Client { get; set; }
-
-        public string Controller { get; set; }
+        public ProcessExecutor ProcessExecutor { get; set; }
+        public TokenRetriever TokenRetriever { get; set; }
 
         public void Dispose()
         {
             Client.Dispose();
-            _processExecutor.Dispose();
+            ProcessExecutor.Dispose();
         }
 
-        public async Task<HttpResponseMessage> GetAsync()
+        public async Task<HttpResponseMessage> GetAsync(string actionName)
         {
-            return await Client.GetAsync( Controller );
+            return await Client.GetAsync(actionName);
         }
 
-        public async Task InitialiseTestAsync()
+        public async Task DeployWebApplication()
         {
+            HttpResponseMessage responseMessage=null;
             try
             {
-                var responseMessage = await GetAsync();
-                if ( !responseMessage.IsSuccessStatusCode )
-                    throw new Exception( "UnsuccessfullStatusCode" );
+                responseMessage = await Client.GetAsync(string.Empty);
             }
-            catch ( Exception )
+            catch(Exception)
             {
-                var currentDirectory = Directory.GetCurrentDirectory();
-                var directoryInfo =
-                    Directory.GetParent(
-                        Directory.GetParent( currentDirectory ).FullName );
-                var presentationPath = Path.Combine(
-                    directoryInfo.FullName,
-                    "src", "CodingCode" );
-                Directory.SetCurrentDirectory( presentationPath );
-
-                _processExecutor.Execute(
-                    Path.Combine( DnxTool.GetDnxPath(), "dnx.exe" ),
-                    "web", 10000 );
-                Directory.SetCurrentDirectory( currentDirectory );
+                if(! responseMessage.IsSuccessStatusCode)
+                    StartHostingWebApplication();
             }
+        }
+
+        private void StartHostingWebApplication()
+        {
+            var currentDirectory = Directory.GetCurrentDirectory();
+            var directoryInfo =
+                Directory.GetParent(
+                    Directory.GetParent(currentDirectory).FullName);
+            var presentationPath = Path.Combine(
+                directoryInfo.FullName,
+                "src", "CodingCode.Web");
+            Directory.SetCurrentDirectory(presentationPath);
+            ProcessExecutor.Execute(
+                Path.Combine(DnxTool.GetDnxPath(), "dnx.exe"),
+                "web", 10000);
+            Directory.SetCurrentDirectory(currentDirectory);
+        }
+
+        public async Task<HttpResponseMessage> CodeDatabaseModel(
+            HttpResponseMessage response)
+        {
+            TokenRetriever.HtmlContent =
+                await response.Content.ReadAsStringAsync();
+
+            var formParameters = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("ConnectionString",
+                    @"""Server=DELL\SQLEXPRESS;Database=Northwind;Trusted_Connection=True;MultipleActiveResultSets=true"""),
+                new KeyValuePair<string, string>(
+                    "__RequestVerificationToken",
+                    TokenRetriever.RetrieveAntiForgeryToken())
+            };
+
+            var formUrlEncodedContent =
+                new FormUrlEncodedContent(formParameters.ToArray());
+            return
+                await
+                    Client.PostAsync(
+                        "DynamicRaport/CodeDatabaseModel",
+                        formUrlEncodedContent);
         }
     }
 }

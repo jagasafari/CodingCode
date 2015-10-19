@@ -2,7 +2,7 @@
 {
     using System.IO;
     using Contracts;
-    using ViewModel;
+    using ViewModels;
 
     public class DalGeneratorFactory : IDalGeneratorFactory
     {

@@ -1,7 +1,7 @@
 namespace CodingCode.Web.Contracts
 {
     using Logic;
-    using ViewModel;
+    using ViewModels;
 
     public interface IDalGeneratorFactory
     {
