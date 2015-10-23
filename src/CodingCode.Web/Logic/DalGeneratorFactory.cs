@@ -7,15 +7,17 @@
     public class DalGeneratorFactory : IDalGeneratorFactory
     {
         public DalInfoViewModel DalInfoViewModel { get; set; }
+        public string ApplicationBasePath { get; set; }
+        public string AssemblyName { get; set; }
 
         public DalGenerator Create()
         {
             var dalDirectoryParent =
-                Directory.GetParent(DalInfoViewModel.AssemblyBasePath)
+                Directory.GetParent(ApplicationBasePath)
                     .FullName;
 
             var dalDirectory = Path.Combine(
-                dalDirectoryParent, DalInfoViewModel.AssemblyName);
+                dalDirectoryParent, AssemblyName);
 
             var templateDirectory = Path.Combine(
                 Directory.GetParent(dalDirectory).FullName, "CodingCode.Web",
@@ -25,7 +27,7 @@
             {
                 Database = DalInfoViewModel.Database,
                 Server = DalInfoViewModel.Server,
-                AssemblyName = DalInfoViewModel.AssemblyName,
+                AssemblyName = AssemblyName,
                 DalDirectory = dalDirectory,
                 TemplateDirectory = templateDirectory
             };

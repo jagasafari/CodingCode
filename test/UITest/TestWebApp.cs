@@ -62,8 +62,9 @@
 
             var formParameters = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("ConnectionString",
-                    @"""Server=DELL\SQLEXPRESS;Database=Northwind;Trusted_Connection=True;MultipleActiveResultSets=true"""),
+                new KeyValuePair<string, string>("Server",
+                    @"DELL\SQLEXPRESS"),
+                new KeyValuePair<string, string>("Database","Northwind"),
                 new KeyValuePair<string, string>(
                     "__RequestVerificationToken",
                     TokenRetriever.RetrieveAntiForgeryToken())

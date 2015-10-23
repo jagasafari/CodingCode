@@ -5,13 +5,11 @@
     using Contracts;
     using Logic;
     using Microsoft.AspNet.Mvc;
-    using Microsoft.Dnx.Runtime;
     using ViewModels;
 
     public class DynamicRaportController : Controller
     {
-        private readonly IApplicationEnvironment _applicationEnvironment;
-        private readonly IDalGeneratorFactory _dalGeneratorFactory;
+        private readonly IContextGenerator _contextGenerator;
         private readonly DbContextWrapper _dbContextWrapper;
         private readonly IQueryRequestMapper _queryRequestMapper;
         private readonly IRandomTablePicker _randomTablePicker;
@@ -20,53 +18,33 @@
             DbContextWrapper dbContextWrapper,
             IQueryRequestMapper queryRequestMapper,
             IRandomTablePicker randomTablePicker,
-            IApplicationEnvironment applicationEnvironment,
-            IDalGeneratorFactory dalGeneratorFactory)
+            IContextGenerator contextGenerator)
         {
             _dbContextWrapper = dbContextWrapper;
             _queryRequestMapper = queryRequestMapper;
             _randomTablePicker = randomTablePicker;
-            _applicationEnvironment = applicationEnvironment;
-            _dalGeneratorFactory = dalGeneratorFactory;
+            _contextGenerator = contextGenerator;
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CodeDatabaseModel(DalInfoViewModel dalInfo)
+        public async Task<IActionResult> CodeDatabaseModel(
+            DalInfoViewModel dalInfo)
         {
-            dalInfo.AssemblyName = string.Concat(dalInfo.Server.Replace("\\", "_"),
-                dalInfo.Database);
+            var assemblyName =
+                string.Concat(dalInfo.Server.Replace("\\", "_"),
+                    dalInfo.Database);
 
-            if(_dbContextWrapper.Exists(dalInfo.AssemblyName))
-                return View(dalInfo);
+            if(_dbContextWrapper.Exists(assemblyName))
+                return View((object)assemblyName);
 
-            dalInfo.AssemblyBasePath =
-                _applicationEnvironment.ApplicationBasePath;
-            _dalGeneratorFactory.DalInfoViewModel = dalInfo;
+            _dbContextWrapper[assemblyName] =
+                await
+                    _contextGenerator.GenerateAsync(dalInfo, assemblyName);
 
-            using (
-                var dalGenerator = _dalGeneratorFactory.Create())
-            {
-                dalGenerator.CreateDalDirectory();
-
-                dalGenerator.CopyProjectJson();
-
-                await dalGenerator.RestoreAsync();
-
-                await dalGenerator.ScaffoldAsync();
-
-                dalGenerator.CodeContext();
-
-                await dalGenerator.CodeEntitiesAsync();
-
-                await dalGenerator.BuildAsync();
-
-                _dbContextWrapper[dalInfo.AssemblyName] =
-                    dalGenerator.InstantiateDbContext();
-            }
-
-            return View(dalInfo);
+            return View((object)assemblyName);
         }
+
 
         [HttpGet, ActionName("RandomTable")]
         public IActionResult RandomTable(string assemblyName)

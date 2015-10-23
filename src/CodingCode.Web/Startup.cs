@@ -6,7 +6,9 @@
     using Microsoft.Framework.Configuration;
     using Microsoft.Framework.DependencyInjection;
     using Microsoft.Framework.Logging;
+    using Web;
     using Web.Contracts;
+    using Web.Controllers;
     using Web.Logic;
 
     public class Startup
@@ -31,7 +33,7 @@
             services.AddInstance( Configuration );
             services.AddScoped<IQueryRequestMapper, QueryRequestMapper>();
             services.AddScoped<IRandomTablePicker, RandomTablePicker>();
-            services.AddScoped<IDalGeneratorFactory, DalGeneratorFactory>();
+            services.AddScoped<IContextGenerator, ContextGenerator>();
         }
 
         public void Configure( IApplicationBuilder app,

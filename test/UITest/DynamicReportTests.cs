@@ -52,7 +52,7 @@
                 var responseMessage =
                     await
                         TestWebApp.GetAsync(
-                            @"DynamicRaport/RandomTable?assemblyName=DELL_SQLEXPRESS_Northwind");
+                            @"DynamicRaport/RandomTable?assemblyName=DELL_SQLEXPRESSNorthwind");
                 var readAsStringAsync =
                     await responseMessage.Content.ReadAsStringAsync();
                 Assert.True(
