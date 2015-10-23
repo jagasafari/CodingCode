@@ -23,9 +23,9 @@
 
             return new DalGenerator
             {
-                DatabaseName = DalInfoViewModel.DatabaseName,
+                Database = DalInfoViewModel.Database,
+                Server = DalInfoViewModel.Server,
                 AssemblyName = DalInfoViewModel.AssemblyName,
-                ConnectionString = DalInfoViewModel.ConnectionString,
                 DalDirectory = dalDirectory,
                 TemplateDirectory = templateDirectory
             };

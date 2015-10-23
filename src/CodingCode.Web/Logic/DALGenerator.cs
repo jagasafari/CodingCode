@@ -5,11 +5,10 @@
     using System.IO;
     using System.Linq;
     using System.Reflection;
-    using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
+    using Common;
     using Contracts;
-    using CodingCode.Common;
 
     public class DalGenerator : IDalGenerator
     {
@@ -23,11 +22,11 @@
             _dnuPath = Path.Combine(DnxTool.GetDnxPath(), "dnu.cmd");
         }
 
-        public string DatabaseName { get; set; }
+        public string Database { get; set; }
         public string AssemblyName { get; set; }
-        public string ConnectionString { get; set; }
         public string TemplateDirectory { get; set; }
         public string DalDirectory { get; set; }
+        public string Server { get; set; }
 
         public void Dispose()
         {
@@ -46,15 +45,18 @@
             var templateFile = "project.json.template";
             var templatePath =
                 Path.Combine(TemplateDirectory, templateFile);
-            var destiantionPath = Path.Combine(DalDirectory,
+            var destinationPath = Path.Combine(DalDirectory,
                 "project.json");
-            File.Copy(templatePath, destiantionPath);
+            File.Copy(templatePath, destinationPath);
         }
 
         public async Task RestoreAsync()
         {
-            await Task.Factory.StartNew(()=>ProcessExecutor.ExecuteAndWait(_dnuPath, "restore",
-                x => x.Contains("Error")));
+            await
+                Task.Factory.StartNew(
+                    () =>
+                        ProcessExecutor.ExecuteAndWait(_dnuPath, "restore",
+                            x => x.Contains("Error")));
         }
 
         public async Task ScaffoldAsync()
@@ -62,9 +64,13 @@
             var dnxProcessPath = Path.Combine(DnxTool.GetDnxPath(),
                 "dnx.exe");
             var command =
-                $"ef dbcontext scaffold {ConnectionString} EntityFramework.SqlServer";
-            await Task.Factory.StartNew(()=>ProcessExecutor.ExecuteInShellAndWait(dnxProcessPath, command));
-            var contextFileName = $"{DatabaseName}Context.cs";
+                $"ef dbcontext scaffold {GetConnectionString()} EntityFramework.SqlServer";
+            await
+                Task.Factory.StartNew(
+                    () =>
+                        ProcessExecutor.ExecuteInShellAndWait(
+                            dnxProcessPath, command));
+            var contextFileName = $"{Database}Context.cs";
             if(! File.Exists(Path.Combine(DalDirectory, contextFileName)))
                 throw new Exception("Scaffold failed!");
         }
@@ -72,7 +78,7 @@
         public void CodeContext()
         {
             var contextFile = Path.Combine(DalDirectory,
-                $"{DatabaseName}Context.cs");
+                $"{Database}Context.cs");
             var efScaffoldCode = File.ReadAllLines(contextFile);
             using(var streamWriter = new StreamWriter(contextFile))
             {
@@ -83,7 +89,7 @@
                 var regex =
                     new Regex(
                         @"public virtual DbSet<(.*)> (\1) { get; set; }");
-                for (var i = 0; i < efScaffoldCode.Length - 2; i++)
+                for(var i = 0; i < efScaffoldCode.Length - 2; i++)
                 {
                     streamWriter.WriteLine(efScaffoldCode[i]);
                     var match = regex.Match(efScaffoldCode[i]);
@@ -99,34 +105,42 @@
 
         public async Task CodeEntitiesAsync()
         {
-            await Task.Factory.StartNew(()=>Parallel.ForEach(_tables, table =>
-            {
-                var entityFile = Path.Combine(DalDirectory,
-                    $"{table}.cs");
-                var entityCode = File.ReadAllLines(entityFile);
-                using(var streamWriter = new StreamWriter(entityFile))
-                {
-                    IList<string> columns = new List<string>();
-                    for(var i = 0; i < entityCode.Length - 2; i++)
+            await
+                Task.Factory.StartNew(
+                    () => Parallel.ForEach(_tables, table =>
                     {
-                        if(IsRecognizedTableColumn(entityCode[i]))
+                        var entityFile = Path.Combine(DalDirectory,
+                            $"{table}.cs");
+                        var entityCode = File.ReadAllLines(entityFile);
+                        using(
+                            var streamWriter = new StreamWriter(entityFile)
+                            )
                         {
-                            var columnName = entityCode[i].Split(' ');
-                            columns.Add(columnName[10]);
+                            IList<string> columns = new List<string>();
+                            for(var i = 0; i < entityCode.Length - 2; i++)
+                            {
+                                if(IsRecognizedTableColumn(entityCode[i]))
+                                {
+                                    var columnName =
+                                        entityCode[i].Split(' ');
+                                    columns.Add(columnName[10]);
+                                }
+                                streamWriter.WriteLine(entityCode[i]);
+                            }
+                            WriteEntityCastomCode(streamWriter, columns,
+                                table);
+                            streamWriter.WriteLine("    }");
+                            streamWriter.WriteLine("}");
                         }
-                        streamWriter.WriteLine(entityCode[i]);
-                    }
-                    WriteEntityCastomCode(streamWriter, columns, table);
-                    streamWriter.WriteLine("    }");
-                    streamWriter.WriteLine("}");
-                }
-            }));
+                    }));
         }
 
         public async Task BuildAsync()
         {
-            await Task.Factory.StartNew(()=>ProcessExecutor.ExecuteAndWait(_dnuPath, "build",
-                x => ! x.Contains("Build succeeded")));
+            await
+                Task.Factory.StartNew(
+                    () => ProcessExecutor.ExecuteAndWait(_dnuPath, "build",
+                        x => ! x.Contains("Build succeeded")));
         }
 
         public dynamic InstantiateDbContext()
@@ -146,6 +160,12 @@
                 return typeInfo.GetConstructors().Single().Invoke(null);
             }
             throw new Exception("Database context not created.");
+        }
+
+        private string GetConnectionString()
+        {
+            return
+                $"Server={Server};Database={Database};Trusted_Connection=True;MultipleActiveResultSets=true";
         }
 
         private bool IsRecognizedTableColumn(string codeLine)
@@ -230,17 +250,6 @@
                 ClearFolder(di.FullName);
                 di.Delete();
             }
-        }
-
-        public static string GenerateAssemblyName(string connection)
-        {
-            var connectionParts = connection.Split(';', '=');
-            var stringBuilder = new StringBuilder();
-            stringBuilder.Append(connectionParts[1].Replace(@"\", "_"));
-            stringBuilder.Append("_");
-            stringBuilder.Append(connectionParts[3]);
-
-            return stringBuilder.ToString();
         }
     }
 }

@@ -33,7 +33,7 @@
             }
             catch(Exception)
             {
-                if(! responseMessage.IsSuccessStatusCode)
+                if(responseMessage==null || !responseMessage.IsSuccessStatusCode)
                     StartHostingWebApplication();
             }
         }

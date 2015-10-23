@@ -34,38 +34,37 @@
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CodeDatabaseModel(DalInfoViewModel dalInfo)
         {
-            var assemblyName =
-                DalGenerator.GenerateAssemblyName(dalInfo.ConnectionString);
-            dalInfo.AssemblyName = assemblyName;
+            dalInfo.AssemblyName = string.Concat(dalInfo.Server.Replace("\\", "_"),
+                dalInfo.Database);
 
-            if (!_dbContextWrapper.Exists(assemblyName))
+            if(_dbContextWrapper.Exists(dalInfo.AssemblyName))
+                return View(dalInfo);
+
+            dalInfo.AssemblyBasePath =
+                _applicationEnvironment.ApplicationBasePath;
+            _dalGeneratorFactory.DalInfoViewModel = dalInfo;
+
+            using (
+                var dalGenerator = _dalGeneratorFactory.Create())
             {
-                dalInfo.AssemblyBasePath =
-                    _applicationEnvironment.ApplicationBasePath;
-                dalInfo.DatabaseName = "Northwind";
-                _dalGeneratorFactory.DalInfoViewModel = dalInfo;
+                dalGenerator.CreateDalDirectory();
 
-                using (
-                    var dalGenerator = _dalGeneratorFactory.Create())
-                {
-                    dalGenerator.CreateDalDirectory();
+                dalGenerator.CopyProjectJson();
 
-                    dalGenerator.CopyProjectJson();
+                await dalGenerator.RestoreAsync();
 
-                    await dalGenerator.RestoreAsync();
+                await dalGenerator.ScaffoldAsync();
 
-                    await dalGenerator.ScaffoldAsync();
+                dalGenerator.CodeContext();
 
-                    dalGenerator.CodeContext();
+                await dalGenerator.CodeEntitiesAsync();
 
-                    await dalGenerator.CodeEntitiesAsync();
+                await dalGenerator.BuildAsync();
 
-                    await dalGenerator.BuildAsync();
-
-                    _dbContextWrapper[assemblyName] =
-                        dalGenerator.InstantiateDbContext();
-                }
+                _dbContextWrapper[dalInfo.AssemblyName] =
+                    dalGenerator.InstantiateDbContext();
             }
+
             return View(dalInfo);
         }
 

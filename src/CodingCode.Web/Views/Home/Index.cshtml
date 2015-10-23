@@ -1,17 +1,31 @@
 ﻿@using CodingCode.Web.ViewModels
-@model CodingCode.Web.ViewModels.DalInfoViewModel
-
+@model DalInfoViewModel
 <form asp-controller="DynamicRaport" asp-action="CodeDatabaseModel" method="post" class="form-horizontal" role="form">
     <hr />
     <div class="form-group">
-        <label asp-for="ConnectionString" class="col-md-2 control-label">Connection: </label>
+        <label asp-for="Server" class="col-md-2 control-label"></label>
         <div class="col-md-10">
-            <input asp-for="ConnectionString" class="form-control" placeholder="enter connection string" 
-                   type="text" value="Server=DELL\SQLEXPRESS;Database=Northwind;Trusted_Connection=True;MultipleActiveResultSets=true"/>
-            <span asp-validation-for="ConnectionString" class="text-danger"></span>
+            <input asp-for="Server" class="form-control" placeholder="enter server name"
+                   type="text" value="DELL\SQLEXPRESS" />
+            <span asp-validation-for="Server" class="text-danger"></span>
         </div>
     </div>
     <div class="form-group">
-        <input type="submit" value="Connect" class="btn btn-default pull-right" />
+        <label asp-for="Database" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Database" class="form-control" placeholder="enter server name"
+                   type="text" value="Northwind" />
+            <span asp-validation-for="Database" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-default pull-right">Connect</button>
     </div>
 </form>
+
+@section Scripts {
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script type="text/javascript">
+        $(document).ready(disableSubmit);
+    </script>
+}
