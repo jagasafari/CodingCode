@@ -1,5 +1,5 @@
 ﻿{
-  "projects": [ "src", "test", "ci" ],
+  "projects": [ "src", "test", "ContiniousIntegration" ],
   "sdk": {
     "version": "1.0.0-beta8"
   }

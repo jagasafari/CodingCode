@@ -1,0 +1,9 @@
+﻿{
+  "DownloadDestination": "c:\\users\\mika\\downloads\\gh",
+  "SampleProjects": {
+    "0": "https://github.com/aspnet/HttpAbstractions/archive/dev.zip",
+    "1": "https://github.com/aspnet/EntityFramework/archive/dev.zip",
+    "2": "https://github.com/aspnet/Mvc/archive/dev.zip",
+      "3": "https://github.com/aspnet/SignalR-Server/archive/dev.zip"
+  } 
+}

@@ -15,7 +15,6 @@
             var c2 = new DirectoryInfo(path).GetFiles("*.*",SearchOption.AllDirectories).Length;
             Assert.True(c1<c2);
             Assert.Equal(filesToTest,c2);
-            Assert.Equal(c1,7);
         }
 
         [Fact]

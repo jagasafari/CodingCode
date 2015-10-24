@@ -15,7 +15,12 @@
             {
                 SolutionPath = configuration["Paths:Solution"],
                 MinutesToWait =
-                    int.Parse(configuration["Timeing:MinutesToWait"])
+                    int.Parse(configuration["Timeing:MinutesToWait"]),
+                Sender = configuration[GetKey(nameof(CiTestConfiguration.Sender))],
+                Password = configuration[GetKey(nameof(CiTestConfiguration.Password))],
+                SmtpPort = int.Parse(configuration[GetKey(nameof(CiTestConfiguration.SmtpPort))]),
+                SmtpHost=configuration[GetKey(nameof(CiTestConfiguration.SmtpHost))],
+                Receiver=configuration[GetKey(nameof(CiTestConfiguration.Receiver))]
             };
             var count = 0;
             var next = GetTestProject(count++);
@@ -25,6 +30,11 @@
                 next = GetTestProject(count++);
             }
             return ciTestConfiguration;
+        }
+
+        private static string GetKey(string property)
+        {
+            return $"EMail:{property}";
         }
 
         private static string GetTestProject(int count)

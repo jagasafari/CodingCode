@@ -3,10 +3,11 @@
     using System;
     using System.Linq;
     using System.Net.Http;
+    using System.Threading;
     using CodingCode.Common;
     using Xunit;
 
-    public class DynamicReportTest
+    public class DynamicReportTest :IDisposable
     {
         private readonly int _numRandomTests;
 
@@ -41,6 +42,7 @@
             ()
         {
             await TestWebApp.DeployWebApplication();
+            Thread.Sleep(5000);
             var response = await TestWebApp.Client.GetAsync(string.Empty);
             Assert.True(response.IsSuccessStatusCode);
             var postAsync = await TestWebApp.CodeDatabaseModel(response);
@@ -57,6 +59,11 @@
                     TestDatabase.GetTableNames()
                         .Any(name => readAsStringAsync.Contains(name)));
             }
+        }
+
+        public void Dispose()
+        {
+            TestWebApp.Dispose();
         }
     }
 }

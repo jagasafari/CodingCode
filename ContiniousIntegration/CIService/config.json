@@ -9,5 +9,12 @@
   },
   "Timeing": {
     "MinutesToWait": "30"
+  },
+  "EMail": {
+    "Sender": "Coding.Code000@gmail.com",
+    "Receiver": "Coding.Code000@gmail.com",
+    "Password": "xyz",
+    "SmtpPort": "587",
+    "SmtpHost": "smtp.gmail.com"
   }
 }
