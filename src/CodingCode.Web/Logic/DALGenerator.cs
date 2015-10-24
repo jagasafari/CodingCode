@@ -19,7 +19,7 @@
         public DalGenerator()
         {
             _initialDirectory = Directory.GetCurrentDirectory();
-            _dnuPath = Path.Combine(DnxTool.GetDnxPath(), "dnu.cmd");
+            _dnuPath = DnxTool.GetDnu();
         }
 
         public string Database { get; set; }
@@ -52,24 +52,26 @@
 
         public async Task RestoreAsync()
         {
+            var processExecutor = new ProcessExecutor()
+            {
+                ExpectedExit = true
+            };
             await
                 Task.Factory.StartNew(
                     () =>
-                        ProcessExecutor.ExecuteAndWait(_dnuPath, "restore",
+                        processExecutor.ExecuteAndWait(_dnuPath, "restore",
                             x => x.Contains("Error")));
         }
 
         public async Task ScaffoldAsync()
         {
-            var dnxProcessPath = Path.Combine(DnxTool.GetDnxPath(),
-                "dnx.exe");
             var command =
                 $"ef dbcontext scaffold {GetConnectionString()} EntityFramework.SqlServer";
             await
                 Task.Factory.StartNew(
                     () =>
-                        ProcessExecutor.ExecuteInShellAndWait(
-                            dnxProcessPath, command));
+                        InSellProcessExecutor.ExecuteAndWait(
+                            DnxTool.GetDnx(), command));
             var contextFileName = $"{Database}Context.cs";
             if(! File.Exists(Path.Combine(DalDirectory, contextFileName)))
                 throw new Exception("Scaffold failed!");
@@ -137,9 +139,13 @@
 
         public async Task BuildAsync()
         {
+            var processExecutor = new ProcessExecutor()
+            {
+                ExpectedExit = true
+            };
             await
                 Task.Factory.StartNew(
-                    () => ProcessExecutor.ExecuteAndWait(_dnuPath, "build",
+                    () => processExecutor.ExecuteAndWait(_dnuPath, "build",
                         x => ! x.Contains("Build succeeded")));
         }
 

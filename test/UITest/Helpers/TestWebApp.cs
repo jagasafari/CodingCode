@@ -49,7 +49,7 @@
                 "src", "CodingCode.Web");
             Directory.SetCurrentDirectory(presentationPath);
             ProcessExecutor.Execute(
-                Path.Combine(DnxTool.GetDnxPath(), "dnx.exe"),
+                DnxTool.GetDnx(),
                 "web", 10000);
             Directory.SetCurrentDirectory(currentDirectory);
         }

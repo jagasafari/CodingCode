@@ -1,17 +1,18 @@
 ﻿{
   "version": "1.0.0-*",
-  "description": "UnitTests Class Library",
+  "description": "FetchGitHubSamples Console Application",
   "authors": [ "mika" ],
   "tags": [ "" ],
   "projectUrl": "",
   "licenseUrl": "",
+
   "dependencies": {
-    "xunit": "2.1.0-*",
-    "xunit.runner.dnx": "2.1.0-*"
   },
+
   "commands": {
-    "test": "xunit.runner.dnx"
+    "FetchGitHubSamples": "FetchGitHubSamples"
   },
+
   "frameworks": {
     "dnx451": { }
   }

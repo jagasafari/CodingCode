@@ -1,17 +1,16 @@
 ﻿namespace UITest
 {
     using System;
-    using System.Diagnostics;
     using System.Linq;
     using System.Net.Http;
     using CodingCode.Common;
     using Xunit;
 
-    public class DynamicReportTests
+    public class DynamicReportTest
     {
         private readonly int _numRandomTests;
 
-        public DynamicReportTests()
+        public DynamicReportTest()
         {
             _numRandomTests = 10;
             TestWebApp = new TestWebApp
@@ -22,7 +21,6 @@
                 },
                 ProcessExecutor = new ProcessExecutor
                 {
-                    ProcessInstance = new Process(),
                     ExpectedExit = false
                 },
                 TokenRetriever = new TokenRetriever

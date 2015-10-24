@@ -9,5 +9,15 @@
         {
             return Path.GetDirectoryName(Process.GetCurrentProcess().Modules[0].FileName);
         }
+
+        public static string GetDnx()
+        {
+            return Path.Combine(GetDnxPath(), "dnx.exe");
+        }
+
+        public static string GetDnu()
+        {
+            return Path.Combine(GetDnxPath(), "dnu.cmd");
+        }
     }
 }
