@@ -18,14 +18,12 @@ namespace CIService
         private readonly CiTestConfiguration _testConfiguration;
         private DateTime _lastRunTime;
 
-        public TestRunner(ILogger logger,
-            CiConfigurationReader ciConfigurationReader)
+        public TestRunner(ILogger logger, CiConfigurationReader ciConfigurationReader, Mailer mailer)
         {
             _logger = logger;
             _testConfiguration =
                 ciConfigurationReader.GetTestConfiguration();
-            _mailer =
-                new Mailer(ciConfigurationReader.GetMailConfiguration());
+            _mailer = mailer;
             _lastRunTime = DateTime.UtcNow.AddYears(-1000);
             _founder = new ModifiedFileFounder(_logger,
                 _testConfiguration.SolutionPath);
@@ -39,7 +37,7 @@ namespace CIService
                 {
                     var testResults = RunTests();
                     _logger.Info("Sending Report email");
-                    _mailer.SendReportEmail(testResults);
+                    _mailer.SendReportEmail(_mailer.CreateMessageEmail(testResults, "Report"));
                 }
                 else
                 {

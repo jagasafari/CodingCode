@@ -13,18 +13,18 @@
             _mailConfiguration = mailConfiguration;
         }
 
-        public void SendReportEmail(string testsResult)
+        public void SendReportEmail(MailMessage mailMessage)
         {
             using (var smtpClient = CreateSmtClient())
             {
-                smtpClient.Send(CreateMessageEmail(testsResult));
+                smtpClient.Send(mailMessage);
             }
         }
 
-        private MailMessage CreateMessageEmail(string testsResult)
+        public MailMessage CreateMessageEmail(string testsResult, string eventSource)
         {
             return new MailMessage(_mailConfiguration.Sender,
-                _mailConfiguration.Receiver, $"CI Report {DateTime.UtcNow}",
+                _mailConfiguration.Receiver, $"CI {eventSource} {DateTime.UtcNow}",
                 testsResult);
         }
 
