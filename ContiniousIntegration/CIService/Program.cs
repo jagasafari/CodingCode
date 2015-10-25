@@ -24,9 +24,10 @@
             _logger = new LoggerFactory
             {
                 MinimumLevel = LogLevel.Debug
-            }.AddConsole().CreateLogger("CILogger");
-            _logger.LogInformation("CI Service Initialized!");
+            }.AddConsole().CreateLogger("CI");
+            _logger.Info("CI Service Initialized!");
         }
+
 
         public void Main(string[] args)
         {
@@ -34,13 +35,16 @@
                 0);
             while(true)
             {
-                if(NothingChanged())
+                if(ModifiedFileFound())
                 {
-                    _logger.LogInformation("Nothing have changed");
-                    continue;
+                    RunTests();
                 }
-                RunTests();
-                _logger.LogInformation(
+                else
+                {
+                    _logger.Info("Nothing have changed");
+                }
+
+                _logger.Info(
                     $"Going to sleep for {_testConfiguration.MinutesToWait} minutes");
                 Thread.Sleep(timeSpan);
             }
@@ -55,11 +59,11 @@
                 {
                     ExpectedExit = true
                 };
-                _logger.LogInformation($"Testing {projectPath} project");
+                _logger.Info($"Testing {projectPath} project");
                 processExecutor.ExecuteAndWait(DnxTool.GetDnx(),
                     $"-p {projectPath} test",
                     x => x.Equals("Failed"));
-                _logger.LogInformation("Tests Completed!");
+                _logger.Info("Tests Completed!");
                 stringBuilder.Append(processExecutor.Output);
             }
             SendReportEmail(stringBuilder);
@@ -67,7 +71,7 @@
 
         private void SendReportEmail(StringBuilder stringBuilder)
         {
-            _logger.LogInformation("Sending Report email");
+            _logger.Info("Sending Report email");
             using(var smtpClient = CreateSmtClient())
             {
                 smtpClient.Send(CreateMessageEmail(stringBuilder));
@@ -83,7 +87,8 @@
 
         private SmtpClient CreateSmtClient()
         {
-            return new SmtpClient(_testConfiguration.SmtpHost, _testConfiguration.SmtpPort)
+            return new SmtpClient(_testConfiguration.SmtpHost,
+                _testConfiguration.SmtpPort)
             {
                 EnableSsl = true,
                 Credentials =
@@ -92,13 +97,16 @@
             };
         }
 
-        private bool NothingChanged()
+        private bool ModifiedFileFound()
         {
             var minutesFromLastRun =
                 DateTime.UtcNow.AddMinutes(
                     -_testConfiguration.MinutesToWait);
-            return ! GetFiles(_testConfiguration.SolutionPath)
-                .Any(f => f.LastWriteTimeUtc < minutesFromLastRun);
+
+            return
+                AnyFileModified(new[] {"*.cs", "*.cshtml"},
+                    _testConfiguration.SolutionPath,
+                    minutesFromLastRun);
         }
 
         private IEnumerable<string> GetTestProjects()
@@ -111,10 +119,24 @@
                             testProject)}""");
         }
 
-        public static FileInfo[] GetFiles(string solutionPath)
+        public bool AnyFileModified(string[] patterns,
+            string solutionPath, DateTime minutesFromLastRun)
         {
-            return new DirectoryInfo(solutionPath).GetFiles("*.*",
-                SearchOption.AllDirectories);
+            foreach(var pattern in patterns)
+            {
+                var files =
+                    new DirectoryInfo(solutionPath).GetFiles(pattern,
+                        SearchOption.AllDirectories);
+                _logger.Info(
+                    $"{files.Length} {pattern} under the solution");
+                var modifiedFileFound =
+                    files.Any(f => f.LastWriteTimeUtc < minutesFromLastRun);
+                _logger.Info(
+                    $"{modifiedFileFound} that at least one of them was modified within {minutesFromLastRun} minutes");
+                if(modifiedFileFound)
+                    return true;
+            }
+            return false;
         }
     }
 }
