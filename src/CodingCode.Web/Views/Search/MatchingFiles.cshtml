@@ -1,0 +1,47 @@
+﻿@using Newtonsoft.Json
+@using Newtonsoft.Json.Serialization
+@if (Model.FirstFileContent == null)
+{
+    <strong>Not found!</strong>
+}
+else
+{
+    <br />
+    <br />
+    <div data-bind="foreach: codeFiles">
+        <div data-bind="foreach: fileLines">
+            <pre class="codeStyle" data-bind="text: $data">
+            </pre>
+            <br/>
+        </div>
+        <hr/>
+    </div>
+}
+@section scripts
+{
+    <script type="text/javascript">
+
+        $(function () {
+            function files(firstFileLines) {
+                var self = this;
+                self.fileLines = ko.observableArray(firstFileLines);
+            }
+            function viewModel() {
+                var self = this;
+                self.names = @Json.Serialize(Model.MachingFiles);
+                self.codeFiles = ko.observableArray([new files(@Json.Serialize(Model.FirstFileContent))]);
+                self.codeFiles.push(new files(@Json.Serialize(Model.FirstFileContent)));
+                self.codeFiles.push(new files(@Json.Serialize(Model.FirstFileContent)));
+                self.codeFiles.push(new files(@Json.Serialize(Model.FirstFileContent)));
+                self.codeFiles.push(new files(@Json.Serialize(Model.FirstFileContent)));
+                self.codeFiles.push(new files(@Json.Serialize(Model.FirstFileContent)));
+                self.codeFiles.push(new files(@Json.Serialize(Model.FirstFileContent)));
+                self.codeFiles.push(new files(@Json.Serialize(Model.FirstFileContent)));
+                self.codeFiles.push(new files(@Json.Serialize(Model.FirstFileContent)));
+                self.codeFiles.push(new files(@Json.Serialize(Model.FirstFileContent)));
+            }
+
+            ko.applyBindings(new viewModel());
+        });
+    </script>
+}

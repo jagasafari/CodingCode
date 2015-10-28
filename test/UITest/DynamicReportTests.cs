@@ -7,11 +7,11 @@
     using CodingCode.Common;
     using Xunit;
 
-    public class DynamicReportTest :IDisposable
+    public class DynamicReportTests :IDisposable
     {
         private readonly int _numRandomTests;
 
-        public DynamicReportTest()
+        public DynamicReportTests()
         {
             _numRandomTests = 10;
             TestWebApp = new TestWebApp

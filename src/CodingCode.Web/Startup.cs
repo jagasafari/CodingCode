@@ -1,6 +1,7 @@
 ﻿namespace CodingCode.Web
 {
     using Contracts;
+    using Controllers;
     using Logic;
     using Microsoft.AspNet.Builder;
     using Microsoft.AspNet.Hosting;
@@ -36,6 +37,7 @@
             services.AddScoped<IQueryRequestMapper, QueryRequestMapper>();
             services.AddScoped<IRandomTablePicker, RandomTablePicker>();
             services.AddScoped<IContextGenerator, ContextGenerator>();
+            services.AddScoped<ICodeFounder, CodeFounder>();
         }
 
         public void Configure(IApplicationBuilder app,
@@ -43,11 +45,11 @@
         {
             loggerFactory.MinimumLevel = LogLevel.Information;
             loggerFactory.AddConsole();
-            loggerFactory.AddDebug();
 
 
             app.UseBrowserLink();
             app.UseDeveloperExceptionPage();
+            //app.UseExceptionHandler((x) => { });//to do
             app.UseRuntimeInfoPage();
 
             app.UseStaticFiles();

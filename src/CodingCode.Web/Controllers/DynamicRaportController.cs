@@ -28,34 +28,38 @@
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CodeDatabaseModel(
+        public async Task<IActionResult> CodeDatabase(
             DalInfoViewModel dalInfo)
         {
-            var assemblyName =
-                string.Concat(dalInfo.Server.Replace("\\", "_"),
-                    dalInfo.Database);
+            var databaseCodedViewModel = new DatabaseCodedViewModel()
+            {
+                AssemblyName =
+                    string.Concat(dalInfo.Server.Replace("\\",
+                        "_"),
+                        dalInfo.Database)
+            };
 
-            if(_dbContextWrapper.Exists(assemblyName))
-                return View((object)assemblyName);
+            if(_dbContextWrapper.Exists(databaseCodedViewModel.AssemblyName))
+                return View(databaseCodedViewModel);
 
-            _dbContextWrapper[assemblyName] =
+            _dbContextWrapper[databaseCodedViewModel.AssemblyName] =
                 await
-                    _contextGenerator.GenerateAsync(dalInfo, assemblyName);
+                    _contextGenerator.GenerateAsync(dalInfo, databaseCodedViewModel.AssemblyName);
 
-            return View((object)assemblyName);
+            return View(databaseCodedViewModel);
         }
 
 
         [HttpGet, ActionName("RandomTable")]
-        public IActionResult RandomTable(string assemblyName)
+        public IActionResult RandomTable(DatabaseCodedViewModel databaseCoded)
         {
             Type randomType =
                 _randomTablePicker.GetRandomTable(
-                    _dbContextWrapper[assemblyName]);
+                    _dbContextWrapper[databaseCoded.AssemblyName]);
 
             TableViewModel mapToViewModel =
                 _queryRequestMapper.MapToViewModel(randomType,
-                    _dbContextWrapper[assemblyName]);
+                    _dbContextWrapper[databaseCoded.AssemblyName]);
 
             return View(mapToViewModel);
         }

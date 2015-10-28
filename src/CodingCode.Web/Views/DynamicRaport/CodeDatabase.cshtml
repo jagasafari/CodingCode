@@ -1,0 +1,6 @@
+﻿@using System.Threading.Tasks
+@using CodingCode.Web.ViewModels
+@model CodingCode.Web.ViewModels.DatabaseCodedViewModel
+<h2>Database Model succesfully created!</h2>
+
+<a asp-controller="DynamicRaport" asp-action="RandomTable" asp-route-assemblyName="@Model.AssemblyName">Look into random table!</a>

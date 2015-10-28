@@ -12,7 +12,6 @@
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
-
             return View();
         }
 
@@ -25,6 +24,9 @@
 
         public IActionResult Error()
         {
+            //log to console
+            //log to file
+            //log errors to database
             return View("~/Views/Shared/Error.cshtml");
         }
     }
