@@ -7,7 +7,8 @@
 else
 {
     <br />
-    <br />
+    <br/>
+    <button data-bind="click: GetNextFile" class="pull-right">Get More Code</button>
     <div data-bind="foreach: codeFiles">
         <div data-bind="foreach: fileLines">
             <pre class="codeStyle" data-bind="text: $data">
@@ -30,15 +31,10 @@ else
                 var self = this;
                 self.names = @Json.Serialize(Model.MachingFiles);
                 self.codeFiles = ko.observableArray([new files(@Json.Serialize(Model.FirstFileContent))]);
-                self.codeFiles.push(new files(@Json.Serialize(Model.FirstFileContent)));
-                self.codeFiles.push(new files(@Json.Serialize(Model.FirstFileContent)));
-                self.codeFiles.push(new files(@Json.Serialize(Model.FirstFileContent)));
-                self.codeFiles.push(new files(@Json.Serialize(Model.FirstFileContent)));
-                self.codeFiles.push(new files(@Json.Serialize(Model.FirstFileContent)));
-                self.codeFiles.push(new files(@Json.Serialize(Model.FirstFileContent)));
-                self.codeFiles.push(new files(@Json.Serialize(Model.FirstFileContent)));
-                self.codeFiles.push(new files(@Json.Serialize(Model.FirstFileContent)));
-                self.codeFiles.push(new files(@Json.Serialize(Model.FirstFileContent)));
+                self.GetNextFile = function() {
+                    for (var i = 0; i < self.names.length; i++) {
+                        self.codeFiles.push(new files(@Json.Serialize(Model.FirstFileContent)));                    }
+                }
             }
 
             ko.applyBindings(new viewModel());
