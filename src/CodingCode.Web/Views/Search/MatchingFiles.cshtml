@@ -6,16 +6,22 @@
 }
 else
 {
-    <br />
-    <br/>
-    <button data-bind="click: GetNextFile" class="pull-right">Get More Code</button>
-    <div data-bind="foreach: codeFiles">
-        <div data-bind="foreach: fileLines">
-            <pre class="codeStyle" data-bind="text: $data">
+    <div id="parent">
+        <br />
+        <br />
+        <h2>
+            Total number of files: <span data-bind="text: codeFiles().length"></span>
+            out of <span data-bind="text: names().length"></span>
+        </h2>
+        <button id="moreCode" data-bind="click: GetNextFile" class="pull-right">Get More Code</button>
+        <div data-bind="foreach: codeFiles">
+            <div data-bind="foreach: fileLines">
+                <pre class="codeStyle" data-bind="text: $data">
             </pre>
-            <br/>
+                <br />
+            </div>
+            <hr />
         </div>
-        <hr/>
     </div>
 }
 @section scripts
@@ -27,17 +33,23 @@ else
                 var self = this;
                 self.fileLines = ko.observableArray(firstFileLines);
             }
+
             function viewModel() {
                 var self = this;
-                self.names = @Json.Serialize(Model.MachingFiles);
+                self.names = ko.observableArray(@Json.Serialize(Model.MachingFiles));
                 self.codeFiles = ko.observableArray([new files(@Json.Serialize(Model.FirstFileContent))]);
-                self.GetNextFile = function() {
-                    for (var i = 0; i < self.names.length; i++) {
-                        self.codeFiles.push(new files(@Json.Serialize(Model.FirstFileContent)));                    }
+                self.nextFile = 1;
+                self.GetNextFile = function () {
+                    if (self.nextFile < self.names().length) {
+                        self.codeFiles.push(new files(@Json.Serialize(Model.FirstFileContent)));
+                        self.nextFile++;
+                    }
                 }
             }
 
-            ko.applyBindings(new viewModel());
+            var vm = new viewModel();
+            ko.applyBindings(vm);
+            $('#parent').on('keydown',function () { $('#moreCode').click(); });
         });
     </script>
 }
