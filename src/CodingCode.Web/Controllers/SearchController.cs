@@ -1,43 +1,40 @@
-﻿// For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-
-namespace CodingCode.Web.Controllers
+﻿namespace CodingCode.Web.Controllers
 {
     using Contracts;
-    using Logic;
     using Microsoft.AspNet.Mvc;
     using ViewModels;
 
     public class SearchController : Controller
     {
-        private readonly ICodeFounder _codeFounder;
+        private readonly ICodeFounderFactory _codeFounderFactory;
 
-        public SearchController(ICodeFounder codeFounder)
+        public SearchController(ICodeFounderFactory codeFounderFactory)
         {
-            _codeFounder = codeFounder;
+            _codeFounderFactory = codeFounderFactory;
         }
 
         public IActionResult Index()
         {
             return View();
         }
-
-        public IActionResult GetFileCode(string fullPath)
+        [HttpGet]
+        public IActionResult FileCode(string path)
         {
-            var fileContent = CodeFounder.GetFileContent(fullPath);
-            return PartialView(fileContent);
+            return Json(System.IO.File.ReadAllLines(path));
         }
 
         [HttpPost]
         public IActionResult MatchingFiles(SearchedCodeViewModel model)
         {
-            var machingFiles = _codeFounder.GetMachingFiles(model);
+            var codeFounder = _codeFounderFactory.Create(model);
+            var machingFiles = codeFounder.GetMachingFiles();
 
             var machingFilesViewModel = new MachingFilesViewModel
             {
                 MachingFiles = machingFiles,
                 FirstFileContent =
                     machingFiles.Length > 0
-                        ? CodeFounder.GetFileContent(machingFiles[0])
+                        ? System.IO.File.ReadAllLines(machingFiles[0])
                         : null
             };
 

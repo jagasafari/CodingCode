@@ -41,7 +41,10 @@ else
                 self.nextFile = 1;
                 self.GetNextFile = function () {
                     if (self.nextFile < self.names().length) {
-                        self.codeFiles.push(new files(@Json.Serialize(Model.FirstFileContent)));
+                        var p = "http://localhost:5000/Search/FileCode?path=".concat(this.names()[this.nextFile]);
+                        $.getJSON(p, function (fileLines) {
+                            self.codeFiles.push(new files(fileLines));
+                            });
                         self.nextFile++;
                     }
                 }
@@ -49,7 +52,7 @@ else
 
             var vm = new viewModel();
             ko.applyBindings(vm);
-            $('#parent').on('keydown',function () { $('#moreCode').click(); });
+            $("body").on('keydown',function () { $('#moreCode').click(); });
         });
     </script>
 }

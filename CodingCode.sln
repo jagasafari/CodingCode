@@ -27,6 +27,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ContiniousIntegration", "Co
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "IntegrationTests", "test\IntegrationTests\IntegrationTests.xproj", "{77383688-5B2C-4E55-924D-F7A4669A4571}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "utilities", "utilities", "{723FADDE-1B99-4F4B-9798-C5E6DB47EB68}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "EncryptionUtility", "utilities\EncriptionUtility\EncryptionUtility.xproj", "{E7B67821-8E7A-440A-B8F8-65CBD9052780}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +61,10 @@ Global
 		{77383688-5B2C-4E55-924D-F7A4669A4571}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{77383688-5B2C-4E55-924D-F7A4669A4571}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{77383688-5B2C-4E55-924D-F7A4669A4571}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7B67821-8E7A-440A-B8F8-65CBD9052780}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7B67821-8E7A-440A-B8F8-65CBD9052780}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7B67821-8E7A-440A-B8F8-65CBD9052780}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7B67821-8E7A-440A-B8F8-65CBD9052780}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -68,5 +76,6 @@ Global
 		{9558215E-279E-4760-B584-0CDF05997087} = {927DAB87-9099-4F34-ADCD-A9D7EF5EC098}
 		{D2A24348-90CD-452C-97C4-AC94CB875EF3} = {AC0AD8EA-6564-424A-AE01-BE87771A1DE1}
 		{77383688-5B2C-4E55-924D-F7A4669A4571} = {AC0AD8EA-6564-424A-AE01-BE87771A1DE1}
+		{E7B67821-8E7A-440A-B8F8-65CBD9052780} = {723FADDE-1B99-4F4B-9798-C5E6DB47EB68}
 	EndGlobalSection
 EndGlobal

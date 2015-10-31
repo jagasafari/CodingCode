@@ -37,7 +37,7 @@
             services.AddScoped<IQueryRequestMapper, QueryRequestMapper>();
             services.AddScoped<IRandomTablePicker, RandomTablePicker>();
             services.AddScoped<IContextGenerator, ContextGenerator>();
-            services.AddScoped<ICodeFounder, CodeFounder>();
+            services.AddScoped<ICodeFounderFactory, CodeFounderFactory>();
         }
 
         public void Configure(IApplicationBuilder app,
