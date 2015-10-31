@@ -1,7 +1,6 @@
 ﻿namespace CodingCode.Web
 {
     using Contracts;
-    using Controllers;
     using Logic;
     using Microsoft.AspNet.Builder;
     using Microsoft.AspNet.Hosting;
@@ -27,17 +26,11 @@
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc()
-                .AddViewLocalization(
-                    options => options.ResourcesPath = "Resources");
-            services.AddLocalization(
-                options => options.ResourcesPath = "Resources");
-            services.AddSingleton(typeof(DbContextWrapper));
             services.AddInstance(Configuration);
             services.AddScoped<IQueryRequestMapper, QueryRequestMapper>();
             services.AddScoped<IRandomTablePicker, RandomTablePicker>();
             services.AddScoped<IContextGenerator, ContextGenerator>();
-            services.AddScoped<ICodeFounderFactory, CodeFounderFactory>();
+            services.AddSingleton(typeof(DbContextWrapper));
         }
 
         public void Configure(IApplicationBuilder app,
