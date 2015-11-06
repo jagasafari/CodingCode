@@ -1,11 +1,12 @@
-﻿namespace UITest
+﻿namespace CodingCode.IntegrationTest
 {
     using System;
-    using System.Linq;
     using System.Net.Http;
     using System.Threading;
-    using CodingCode.Common;
+    using Common;
+    using Helpers;
     using Xunit;
+    using System.Linq;
 
     public class DynamicReportTests :IDisposable
     {

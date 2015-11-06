@@ -1,4 +1,4 @@
-﻿namespace UITest
+﻿namespace CodingCode.IntegrationTest.Helpers
 {
     using System.Collections.Generic;
 

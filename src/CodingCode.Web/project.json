@@ -16,7 +16,7 @@
     "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0-beta8",
     "EntityFramework.SqlServer": "7.0.0-beta8",
     "Newtonsoft.Json": "8.0.1-beta1",
-    "CodingCode.Common": ""
+    "Common": "1.0.0-*"
   },
 
   "commands": {

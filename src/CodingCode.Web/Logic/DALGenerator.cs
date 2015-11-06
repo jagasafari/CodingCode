@@ -19,7 +19,7 @@
         public DalGenerator()
         {
             _initialDirectory = Directory.GetCurrentDirectory();
-            _dnuPath = DnxTool.GetDnu();
+            _dnuPath = DnxInformation.GetDnu();
         }
 
         public string Database { get; set; }
@@ -71,7 +71,7 @@
                 Task.Factory.StartNew(
                     () =>
                         InSellProcessExecutor.ExecuteAndWait(
-                            DnxTool.GetDnx(), command));
+                            DnxInformation.GetDnx(), command));
             var contextFileName = $"{Database}Context.cs";
             if(! File.Exists(Path.Combine(DalDirectory, contextFileName)))
                 throw new Exception("Scaffold failed!");

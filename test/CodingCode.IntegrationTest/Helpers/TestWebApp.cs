@@ -1,11 +1,11 @@
-﻿namespace UITest
+﻿namespace CodingCode.IntegrationTest.Helpers
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using CodingCode.Common;
+    using Common;
 
     public class TestWebApp : IDisposable
     {
@@ -49,7 +49,7 @@
                 "src", "CodingCode.Web");
             Directory.SetCurrentDirectory(presentationPath);
             ProcessExecutor.Execute(
-                DnxTool.GetDnx(),
+                DnxInformation.GetDnx(),
                 "web", 10000);
             Directory.SetCurrentDirectory(currentDirectory);
         }
