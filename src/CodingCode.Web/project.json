@@ -17,7 +17,8 @@
     "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0-beta8",
     "EntityFramework.SqlServer": "7.0.0-beta8",
     "Newtonsoft.Json": "8.0.1-beta1",
-    "Common": "1.0.0-*"
+    "Common": "1.0.0-*",
+    "ProcessExecution": "1.0.0-*"
   },
   "commands": {
     "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --ASPNET_ENV development --server.urls http://localhost:5000",

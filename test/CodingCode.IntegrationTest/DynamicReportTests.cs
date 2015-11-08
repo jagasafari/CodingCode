@@ -7,6 +7,7 @@
     using Helpers;
     using Xunit;
     using System.Linq;
+    using Common.ProcessExecution;
 
     public class DynamicReportTests :IDisposable
     {
@@ -21,7 +22,6 @@
                 {
                     BaseAddress = new Uri("http://localhost:5000")
                 },
-                ProcessExecutor = new ProcessExecutor(),
                 TokenRetriever = new TokenRetriever
                 {
                     ActionUrl = "/DynamicRaport/CodeDatabaseModel"

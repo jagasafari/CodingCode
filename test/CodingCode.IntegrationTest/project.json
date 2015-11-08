@@ -5,6 +5,9 @@
   "tags": [ "" ],
   "projectUrl": "",
   "licenseUrl": "",
+  "commands": {
+    "test": "xunit.runner.dnx"
+  },
   "dependencies": {
     "CodingCode.Web": "1.0.0-*",
     "Common": "1.0.0-*",

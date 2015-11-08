@@ -8,6 +8,8 @@
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Common;
+    using Common.ProcessExecution;
+    using Common.ProcessExecution.Model;
     using Contracts;
 
     public class DalGenerator : IDalGenerator
@@ -52,23 +54,38 @@
 
         public async Task RestoreAsync()
         {
-            var processExecutor = new OutputCaptureProcessExecutor();
-            await
-                Task.Factory.StartNew(
-                    () =>
-                        processExecutor.ExecuteAndWait(_dnuPath, "restore",
-                            x => x.Contains("Error")));
+            var instructions = new ProcessInstructions
+            {
+                Program = _dnuPath,
+                Arguments = "restore"
+            };
+            var processFactory = new OutputProcessFactory
+            {
+                Instructions = instructions
+            };
+            var processExecutor = new FinishingProcessExecutor(processFactory)
+            {
+                Instructions = instructions
+            };
+
+            await Task.Factory.StartNew(
+                () =>
+                    processExecutor.ExecuteAndWait(x => x.Contains("Error")));
         }
 
         public async Task ScaffoldAsync()
         {
-            var command =
-                $"ef dbcontext scaffold {GetConnectionString()} EntityFramework.SqlServer";
+            var instructions = new ProcessInstructions
+            {
+                Program = DnxInformation.DnxPath,
+                Arguments =
+                    $"ef dbcontext scaffold {GetConnectionString()} EntityFramework.SqlServer"
+            };
+
             await
                 Task.Factory.StartNew(
                     () =>
-                        InSellProcessExecutor.ExecuteAndWait(
-                            DnxInformation.DnxPath, command));
+                        InSellProcessExecutor.ExecuteAndWait(instructions));
             var contextFileName = $"{Database}Context.cs";
             if(! File.Exists(Path.Combine(DalDirectory, contextFileName)))
                 throw new Exception("Scaffold failed!");
@@ -136,11 +153,23 @@
 
         public async Task BuildAsync()
         {
-            var processExecutor = new OutputCaptureProcessExecutor();
+            var instructions = new ProcessInstructions
+            {
+                Program = _dnuPath,
+                Arguments = "build"
+            };
+            var outputProcessFactory = new OutputProcessFactory
+            {
+                Instructions = instructions
+            };
+            var processExecutor =
+                new FinishingProcessExecutor(outputProcessFactory)
+                {
+                    Instructions = instructions
+                };
             await
                 Task.Factory.StartNew(
-                    () => processExecutor.ExecuteAndWait(_dnuPath, "build",
-                        x => ! x.Contains("Build succeeded")));
+                    () => processExecutor.ExecuteAndWait(x => ! x.Contains("Build succeeded")));
         }
 
         public dynamic InstantiateDbContext()

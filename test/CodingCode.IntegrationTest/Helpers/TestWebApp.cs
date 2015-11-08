@@ -6,11 +6,30 @@
     using System.Net.Http;
     using System.Threading.Tasks;
     using Common;
+    using Common.ProcessExecution;
+    using Common.ProcessExecution.Model;
 
     public class TestWebApp : IDisposable
     {
+        public TestWebApp()
+        {
+            var instructions = new ProcessInstructions
+            {
+                Program = DnxInformation.DnxPath,
+                Arguments = "web"
+            };
+            var processFactory = new OutputProcessFactory
+            {
+                Instructions = instructions
+            };
+            ProcessExecutor = new LivingProcessExecutor(processFactory)
+            {
+                Instructions = instructions
+            };
+        }
+
         public HttpClient Client { get; set; }
-        public ProcessExecutor ProcessExecutor { get; set; }
+        private LivingProcessExecutor ProcessExecutor { get; }
         public TokenRetriever TokenRetriever { get; set; }
 
         public void Dispose()
@@ -26,31 +45,17 @@
 
         public async Task DeployWebApplication()
         {
-            HttpResponseMessage responseMessage=null;
+            HttpResponseMessage responseMessage = null;
             try
             {
                 responseMessage = await Client.GetAsync(string.Empty);
             }
             catch(Exception)
             {
-                if(responseMessage==null || !responseMessage.IsSuccessStatusCode)
+                if(responseMessage == null ||
+                   ! responseMessage.IsSuccessStatusCode)
                     StartHostingWebApplication();
             }
-        }
-
-        private void StartHostingWebApplication()
-        {
-            var currentDirectory = Directory.GetCurrentDirectory();
-            var directoryInfo =
-                Directory.GetParent(
-                    Directory.GetParent(currentDirectory).FullName);
-            var presentationPath = Path.Combine(
-                directoryInfo.FullName,
-                "src", "CodingCode.Web");
-            Directory.SetCurrentDirectory(presentationPath);
-            ProcessExecutor.Execute(DnxInformation.DnxPath, 
-                "web");
-            Directory.SetCurrentDirectory(currentDirectory);
         }
 
         public async Task<HttpResponseMessage> CodeDatabaseModel(
@@ -63,7 +68,7 @@
             {
                 new KeyValuePair<string, string>("Server",
                     @"DELL\SQLEXPRESS"),
-                new KeyValuePair<string, string>("Database","Northwind"),
+                new KeyValuePair<string, string>("Database", "Northwind"),
                 new KeyValuePair<string, string>(
                     "__RequestVerificationToken",
                     TokenRetriever.RetrieveAntiForgeryToken())
@@ -76,6 +81,20 @@
                     Client.PostAsync(
                         "DynamicRaport/CodeDatabaseModel",
                         formUrlEncodedContent);
+        }
+
+        private void StartHostingWebApplication()
+        {
+            var currentDirectory = Directory.GetCurrentDirectory();
+            var directoryInfo =
+                Directory.GetParent(
+                    Directory.GetParent(currentDirectory).FullName);
+            var presentationPath = Path.Combine(
+                directoryInfo.FullName,
+                "src", "CodingCode.Web");
+            Directory.SetCurrentDirectory(presentationPath);
+            ProcessExecutor.Execute();
+            Directory.SetCurrentDirectory(currentDirectory);
         }
     }
 }
