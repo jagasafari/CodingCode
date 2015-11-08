@@ -26,6 +26,7 @@
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc();
             services.AddInstance(Configuration);
             services.AddScoped<IQueryRequestMapper, QueryRequestMapper>();
             services.AddScoped<IRandomTablePicker, RandomTablePicker>();
@@ -42,18 +43,11 @@
 
             app.UseBrowserLink();
             app.UseDeveloperExceptionPage();
-            //app.UseExceptionHandler((x) => { });//to do
             app.UseRuntimeInfoPage();
 
             app.UseStaticFiles();
 
-            app.UseRequestLocalization();
-            app.UseMvc(
-                routes =>
-                {
-                    routes.MapRoute("default",
-                        "{controller=Home}/{action=Index}/{id?}");
-                });
+            app.UseMvcWithDefaultRoute();
         }
     }
 }

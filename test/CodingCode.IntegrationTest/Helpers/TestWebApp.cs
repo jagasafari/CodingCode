@@ -48,9 +48,8 @@
                 directoryInfo.FullName,
                 "src", "CodingCode.Web");
             Directory.SetCurrentDirectory(presentationPath);
-            ProcessExecutor.Execute(
-                DnxInformation.GetDnx(),
-                "web", 10000);
+            ProcessExecutor.Execute(DnxInformation.DnxPath, 
+                "web");
             Directory.SetCurrentDirectory(currentDirectory);
         }
 

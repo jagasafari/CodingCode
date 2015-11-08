@@ -19,7 +19,7 @@
         public DalGenerator()
         {
             _initialDirectory = Directory.GetCurrentDirectory();
-            _dnuPath = DnxInformation.GetDnu();
+            _dnuPath = DnxInformation.DnuPath;
         }
 
         public string Database { get; set; }
@@ -52,10 +52,7 @@
 
         public async Task RestoreAsync()
         {
-            var processExecutor = new ProcessExecutor()
-            {
-                ExpectedExit = true
-            };
+            var processExecutor = new OutputCaptureProcessExecutor();
             await
                 Task.Factory.StartNew(
                     () =>
@@ -71,7 +68,7 @@
                 Task.Factory.StartNew(
                     () =>
                         InSellProcessExecutor.ExecuteAndWait(
-                            DnxInformation.GetDnx(), command));
+                            DnxInformation.DnxPath, command));
             var contextFileName = $"{Database}Context.cs";
             if(! File.Exists(Path.Combine(DalDirectory, contextFileName)))
                 throw new Exception("Scaffold failed!");
@@ -139,10 +136,7 @@
 
         public async Task BuildAsync()
         {
-            var processExecutor = new ProcessExecutor()
-            {
-                ExpectedExit = true
-            };
+            var processExecutor = new OutputCaptureProcessExecutor();
             await
                 Task.Factory.StartNew(
                     () => processExecutor.ExecuteAndWait(_dnuPath, "build",

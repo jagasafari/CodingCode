@@ -1,4 +1,4 @@
-﻿{
+{
   "webroot": "wwwroot",
   "version": "1.0.0-*",
 
@@ -7,6 +7,7 @@
     "Microsoft.AspNet.Mvc": "6.0.0-beta8",
     "Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-beta8",
     "Microsoft.AspNet.Server.WebListener": "1.0.0-beta8",
+    "Microsoft.AspNet.Hosting": "1.0.0-beta8-15683",
     "Microsoft.AspNet.StaticFiles": "1.0.0-beta8",
     "Microsoft.AspNet.Tooling.Razor": "1.0.0-beta8",
     "Microsoft.Framework.Configuration.Json": "1.0.0-beta8",
@@ -18,9 +19,9 @@
     "Newtonsoft.Json": "8.0.1-beta1",
     "Common": "1.0.0-*"
   },
-
   "commands": {
-    "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --ASPNET_ENV development --server.urls http://localhost:5000"
+    "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --ASPNET_ENV development --server.urls http://localhost:5000",
+    "kestrel": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.Kestrel --server.urls http://localhost:5002"
   },
 
   "frameworks": {

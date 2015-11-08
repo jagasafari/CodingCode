@@ -21,10 +21,7 @@
                 {
                     BaseAddress = new Uri("http://localhost:5000")
                 },
-                ProcessExecutor = new ProcessExecutor
-                {
-                    ExpectedExit = false
-                },
+                ProcessExecutor = new ProcessExecutor(),
                 TokenRetriever = new TokenRetriever
                 {
                     ActionUrl = "/DynamicRaport/CodeDatabaseModel"
