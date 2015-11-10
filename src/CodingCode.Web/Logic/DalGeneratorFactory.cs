@@ -2,6 +2,7 @@
 {
     using System.IO;
     using Contracts;
+    using ProcessExecution;
     using ViewModels;
 
     public class DalGeneratorFactory : IDalGeneratorFactory
@@ -29,7 +30,8 @@
                 Server = DalInfoViewModel.Server,
                 AssemblyName = AssemblyName,
                 DalDirectory = dalDirectory,
-                TemplateDirectory = templateDirectory
+                TemplateDirectory = templateDirectory,
+                ProcessProviderServices = new ProcessProviderServices()
             };
         }
     }

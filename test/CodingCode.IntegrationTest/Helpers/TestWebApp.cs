@@ -5,27 +5,20 @@
     using System.IO;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using Common;
-    using Common.ProcessExecution;
-    using Common.ProcessExecution.Model;
+    using ProcessExecution;
+    using ProcessExecution.Model;
 
     public class TestWebApp : IDisposable
     {
-        public TestWebApp()
+        public TestWebApp(ProcessProviderServices processProviderServices)
         {
             var instructions = new ProcessInstructions
             {
                 Program = DnxInformation.DnxPath,
                 Arguments = "web"
             };
-            var processFactory = new OutputProcessFactory
-            {
-                Instructions = instructions
-            };
-            ProcessExecutor = new LivingProcessExecutor(processFactory)
-            {
-                Instructions = instructions
-            };
+            ProcessExecutor =
+                processProviderServices.LivingProcessExecutor(instructions);
         }
 
         public HttpClient Client { get; set; }

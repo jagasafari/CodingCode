@@ -8,6 +8,7 @@
     using Microsoft.Framework.Configuration;
     using Microsoft.Framework.DependencyInjection;
     using Microsoft.Framework.Logging;
+    using ProcessExecution;
 
     public class Startup
     {
@@ -27,11 +28,14 @@
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddInstance(Configuration);
-            services.AddScoped<IQueryRequestMapper, QueryRequestMapper>();
-            services.AddScoped<IRandomTablePicker, RandomTablePicker>();
-            services.AddScoped<IContextGenerator, ContextGenerator>();
-            services.AddSingleton(typeof(DbContextWrapper));
+
+            services
+                .AddSingleton(typeof(DbContextWrapper))
+                .AddScoped<IQueryRequestMapper, QueryRequestMapper>()
+                .AddScoped<IRandomTablePicker, RandomTablePicker>()
+                .AddScoped<IContextGenerator, ContextGenerator>()
+                .AddScoped<ProcessProviderServices>()
+                .AddInstance(Configuration);
         }
 
         public void Configure(IApplicationBuilder app,

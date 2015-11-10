@@ -3,11 +3,10 @@
     using System;
     using System.Net.Http;
     using System.Threading;
-    using Common;
     using Helpers;
     using Xunit;
     using System.Linq;
-    using Common.ProcessExecution;
+    using ProcessExecution;
 
     public class DynamicReportTests :IDisposable
     {
@@ -16,7 +15,7 @@
         public DynamicReportTests()
         {
             _numRandomTests = 10;
-            TestWebApp = new TestWebApp
+            TestWebApp = new TestWebApp(new ProcessProviderServices())
             {
                 Client = new HttpClient
                 {
@@ -25,7 +24,7 @@
                 TokenRetriever = new TokenRetriever
                 {
                     ActionUrl = "/DynamicRaport/CodeDatabaseModel"
-                }
+                },
             };
             TestDatabase = new TestDatabase();
         }

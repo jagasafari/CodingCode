@@ -7,10 +7,9 @@
     using System.Reflection;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
-    using Common;
-    using Common.ProcessExecution;
-    using Common.ProcessExecution.Model;
     using Contracts;
+    using ProcessExecution;
+    using ProcessExecution.Model;
 
     public class DalGenerator : IDalGenerator
     {
@@ -29,6 +28,7 @@
         public string TemplateDirectory { get; set; }
         public string DalDirectory { get; set; }
         public string Server { get; set; }
+        public ProcessProviderServices ProcessProviderServices { get; set; }
 
         public void Dispose()
         {
@@ -59,14 +59,8 @@
                 Program = _dnuPath,
                 Arguments = "restore"
             };
-            var processFactory = new OutputProcessFactory
-            {
-                Instructions = instructions
-            };
-            var processExecutor = new FinishingProcessExecutor(processFactory)
-            {
-                Instructions = instructions
-            };
+            var processExecutor = ProcessProviderServices
+                .FinishingProcessExecutor(instructions);
 
             await Task.Factory.StartNew(
                 () =>
@@ -158,15 +152,9 @@
                 Program = _dnuPath,
                 Arguments = "build"
             };
-            var outputProcessFactory = new OutputProcessFactory
-            {
-                Instructions = instructions
-            };
             var processExecutor =
-                new FinishingProcessExecutor(outputProcessFactory)
-                {
-                    Instructions = instructions
-                };
+                ProcessProviderServices.FinishingProcessExecutor(instructions);
+
             await
                 Task.Factory.StartNew(
                     () => processExecutor.ExecuteAndWait(x => ! x.Contains("Build succeeded")));
