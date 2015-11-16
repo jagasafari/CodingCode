@@ -1,33 +1,32 @@
-namespace CodingCode.Web.Logic
+namespace CodingCode.Services
 {
     using System.Threading.Tasks;
     using Contracts;
     using Microsoft.Dnx.Runtime;
-    using ViewModels;
+    using ViewModel;
 
     public class ContextGenerator : IContextGenerator
     {
         private readonly IApplicationEnvironment _applicationEnvironment;
+        private readonly CodingCodeProviderServices _codingCodeProviderServices;
+        private readonly ProviderModel _providerModel;
 
         public ContextGenerator(
             IApplicationEnvironment applicationEnvironment)
         {
             _applicationEnvironment = applicationEnvironment;
+            _codingCodeProviderServices = new CodingCodeProviderServices();
+            _providerModel = new ProviderModel();
         }
 
         public async Task<object> GenerateAsync(DalInfoViewModel dalInfo,
             string assemblyName)
         {
-            var dalGeneratorFactory = new DalGeneratorFactory
-            {
-                ApplicationBasePath =
-                    _applicationEnvironment.ApplicationBasePath,
-                DalInfoViewModel = dalInfo,
-                AssemblyName = assemblyName
-            };
+            var dataAccessSettings = _providerModel.DataAccessSettings(dalInfo, assemblyName,
+                _applicationEnvironment.ApplicationBasePath);
 
-            using(
-                var dalGenerator = dalGeneratorFactory.Create())
+            using (
+                var dalGenerator = _codingCodeProviderServices.DalGenerator(dataAccessSettings))
             {
                 dalGenerator.CreateDalDirectory();
 

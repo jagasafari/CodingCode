@@ -23,7 +23,6 @@
 
         public HttpClient Client { get; set; }
         private LivingProcessExecutor ProcessExecutor { get; }
-        public TokenRetriever TokenRetriever { get; set; }
 
         public void Dispose()
         {
@@ -51,29 +50,24 @@
             }
         }
 
-        public async Task<HttpResponseMessage> CodeDatabaseModel(
-            HttpResponseMessage response)
+        public async Task<HttpResponseMessage> CodeDatabase(string antiForgeryToken, string formActionUrl)
         {
-            TokenRetriever.HtmlContent =
-                await response.Content.ReadAsStringAsync();
-
             var formParameters = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("Server",
                     @"DELL\SQLEXPRESS"),
                 new KeyValuePair<string, string>("Database", "Northwind"),
                 new KeyValuePair<string, string>(
-                    "__RequestVerificationToken",
-                    TokenRetriever.RetrieveAntiForgeryToken())
+                    "__RequestVerificationToken", antiForgeryToken)
             };
 
             var formUrlEncodedContent =
                 new FormUrlEncodedContent(formParameters.ToArray());
-            return
-                await
-                    Client.PostAsync(
-                        "DynamicRaport/CodeDatabaseModel",
+
+            var re= await
+                    Client.PostAsync(formActionUrl,
                         formUrlEncodedContent);
+            return re;
         }
 
         private void StartHostingWebApplication()

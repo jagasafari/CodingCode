@@ -1,4 +1,4 @@
-﻿namespace CodingCode.Web.ViewModels
+﻿namespace CodingCode.ViewModel
 {
     public class DalInfoViewModel
     {

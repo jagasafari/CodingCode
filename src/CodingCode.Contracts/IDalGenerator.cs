@@ -1,11 +1,10 @@
-﻿namespace CodingCode.Web.Contracts
+﻿namespace CodingCode.Contracts
 {
     using System;
     using System.Threading.Tasks;
 
     public interface IDalGenerator : IDisposable
     {
-        new void Dispose();
         void CreateDalDirectory();
         void CopyProjectJson();
         Task RestoreAsync();

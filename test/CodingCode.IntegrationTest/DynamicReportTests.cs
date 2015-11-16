@@ -1,6 +1,7 @@
 ﻿namespace CodingCode.IntegrationTest
 {
     using System;
+    using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading;
     using Helpers;
@@ -20,16 +21,18 @@
                 Client = new HttpClient
                 {
                     BaseAddress = new Uri("http://localhost:5000")
-                },
-                TokenRetriever = new TokenRetriever
-                {
-                    ActionUrl = "/DynamicRaport/CodeDatabaseModel"
-                },
+                }
             };
-            TestDatabase = new TestDatabase();
         }
 
-        public TestDatabase TestDatabase { get; set; }
+        public IEnumerable<string> TableNames => new[]
+            {
+                "Categories", "CustomerCustomerDemo",
+                "CustomerDemographics",
+                "Customers", "EmployeeTerritories", "Employees",
+                "Order_Details", "Orders", "Products", "Region",
+                "Shippers", "Suppliers", "Territories", "sysdiagrams"
+            };
         public TestWebApp TestWebApp { get; set; }
 
 
@@ -38,13 +41,22 @@
             CodeDatabaseModel_FollowedByRetrieving10RandomTables_IntegrationTest
             ()
         {
+            // make sure web app is hosted
             await TestWebApp.DeployWebApplication();
             Thread.Sleep(5000);
             var response = await TestWebApp.Client.GetAsync(string.Empty);
             Assert.True(response.IsSuccessStatusCode);
-            var postAsync = await TestWebApp.CodeDatabaseModel(response);
+
+            // test CodeDatabase Action
+            var formActionUrl =
+                @"http://localhost:5000/DynamicRaport/CodeDatabase";
+            var antiForgeryToken = TokenRetriever.RetrieveAntiForgeryToken(
+                await response.Content.ReadAsStringAsync());
+            var postAsync = await TestWebApp.CodeDatabase(antiForgeryToken, formActionUrl);
             Assert.True(postAsync.IsSuccessStatusCode);
-            for(var i = 0; i < _numRandomTests; i++)
+
+            // test RandomTable action
+            for (var i = 0; i < _numRandomTests; i++)
             {
                 var responseMessage =
                     await
@@ -52,9 +64,7 @@
                             @"DynamicRaport/RandomTable?assemblyName=DELL_SQLEXPRESSNorthwind");
                 var readAsStringAsync =
                     await responseMessage.Content.ReadAsStringAsync();
-                Assert.True(
-                    TestDatabase.GetTableNames()
-                        .Any(name => readAsStringAsync.Contains(name)));
+                Assert.True(TableNames.Any(name => readAsStringAsync.Contains(name)));
             }
         }
 

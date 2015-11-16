@@ -6,14 +6,11 @@ namespace CodingCode.IntegrationTest.Helpers
 
     public class TokenRetriever
     {
-        public string ActionUrl { get; set; }
-        public string HtmlContent { get; set; }
-
-        public string RetrieveAntiForgeryToken()
+        public static string RetrieveAntiForgeryToken(string htmlContent)
         {
-            var formStartIndex = HtmlContent.IndexOf("<form",
+            var formStartIndex = htmlContent.IndexOf("<form",
                 StringComparison.OrdinalIgnoreCase);
-            var formEndIndex = HtmlContent.IndexOf("</form>", 
+            var formEndIndex = htmlContent.IndexOf("</form>", 
                 StringComparison.OrdinalIgnoreCase);
 
             if(formStartIndex == -1 || formEndIndex == -1)
@@ -22,15 +19,10 @@ namespace CodingCode.IntegrationTest.Helpers
             formEndIndex = formEndIndex + "</form>".Length;
 
             var htmlDocument = new XmlDocument();
-            htmlDocument.LoadXml(HtmlContent.Substring(formStartIndex,
+            htmlDocument.LoadXml(htmlContent.Substring(formStartIndex,
                 formEndIndex - formStartIndex));
 
-            if(
-                ! htmlDocument.DocumentElement.Attributes
-                    .Cast<XmlAttribute>().Any(IsActionUrl))
-                throw new Exception("No token found!");
-
-            return 
+            return
                 htmlDocument.GetElementsByTagName("input")
                     .Cast<XmlNode>()
                     .Where(IsToken)
@@ -38,19 +30,9 @@ namespace CodingCode.IntegrationTest.Helpers
 
         }
 
-        private bool IsActionUrl(XmlAttribute attribute)
-        {
-            return string.Compare(attribute.Name, "action",
-                StringComparison.OrdinalIgnoreCase) == 0 &&
-                   attribute.Value.EndsWith(
-                       ActionUrl, StringComparison.OrdinalIgnoreCase);
-        }
-
-        private static bool IsToken(XmlNode input)
-        {
-            return input.Attributes["name"]?.Value ==
+        private static bool IsToken(XmlNode input)=>
+            input.Attributes["name"]?.Value ==
                    "__RequestVerificationToken" &&
                    input.Attributes["type"].Value == "hidden";
-        }
     }
 }

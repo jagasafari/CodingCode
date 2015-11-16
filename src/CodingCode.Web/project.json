@@ -17,12 +17,12 @@
     "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0-beta8",
     "EntityFramework.SqlServer": "7.0.0-beta8",
     "Newtonsoft.Json": "8.0.1-beta1",
-    "Common": "1.0.0-*",
-    "ProcessExecution": "1.0.0-*"
+    "CodingCode.Contracts": "1.0.0-*",
+    "CodingCode.ViewModel": "1.0.0-*",
+    "CodingCode.Services": "1.0.0-*"
   },
   "commands": {
-    "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --ASPNET_ENV development --server.urls http://localhost:5000",
-    "kestrel": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.Kestrel --server.urls http://localhost:5002"
+    "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --ASPNET_ENV development --server.urls http://localhost:5000"
   },
 
   "frameworks": {

@@ -3,9 +3,9 @@
     using System;
     using System.Threading.Tasks;
     using Contracts;
-    using Logic;
     using Microsoft.AspNet.Mvc;
-    using ViewModels;
+    using Services;
+    using ViewModel;
 
     public class DynamicRaportController : Controller
     {

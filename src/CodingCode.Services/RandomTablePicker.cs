@@ -1,4 +1,4 @@
-﻿namespace CodingCode.Web.Logic
+﻿namespace CodingCode.Services
 {
     using System;
     using System.Collections.Generic;
@@ -18,8 +18,8 @@
                 if(nam.Contains("<")) continue;
                 names.Add(t);
             }
-            var random = new Random();
-            var next = random.Next(names.Count);
+            var next = new Random()
+                .Next(names.Count);
             return names[next];
         }
     }

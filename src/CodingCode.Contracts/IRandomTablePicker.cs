@@ -1,4 +1,4 @@
-﻿namespace CodingCode.Web.Contracts
+﻿namespace CodingCode.Contracts
 {
     using System;
     using Microsoft.Data.Entity;

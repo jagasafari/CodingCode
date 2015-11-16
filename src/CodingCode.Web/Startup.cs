@@ -1,7 +1,6 @@
 ﻿namespace CodingCode.Web
 {
     using Contracts;
-    using Logic;
     using Microsoft.AspNet.Builder;
     using Microsoft.AspNet.Hosting;
     using Microsoft.Dnx.Runtime;
@@ -9,18 +8,17 @@
     using Microsoft.Framework.DependencyInjection;
     using Microsoft.Framework.Logging;
     using ProcessExecution;
+    using Services;
 
     public class Startup
     {
-        public Startup(IHostingEnvironment env,
-            IApplicationEnvironment appEnv)
+        public Startup(IApplicationEnvironment appEnv)
         {
-            var builder =
-                new ConfigurationBuilder().SetBasePath(
-                    appEnv.ApplicationBasePath)
+            Configuration = new ConfigurationBuilder()
+                    .SetBasePath(appEnv.ApplicationBasePath)
                     .AddJsonFile("config.json")
-                    .AddEnvironmentVariables();
-            Configuration = builder.Build();
+                    .AddEnvironmentVariables()
+                    .Build();
         }
 
         public IConfigurationRoot Configuration { get; set; }
@@ -31,10 +29,11 @@
 
             services
                 .AddSingleton(typeof(DbContextWrapper))
+                .AddSingleton<CodingCodeProviderServices>()
+                .AddSingleton<ProcessProviderServices>()
                 .AddScoped<IQueryRequestMapper, QueryRequestMapper>()
                 .AddScoped<IRandomTablePicker, RandomTablePicker>()
                 .AddScoped<IContextGenerator, ContextGenerator>()
-                .AddScoped<ProcessProviderServices>()
                 .AddInstance(Configuration);
         }
 
@@ -44,14 +43,12 @@
             loggerFactory.MinimumLevel = LogLevel.Information;
             loggerFactory.AddConsole();
 
-
-            app.UseBrowserLink();
-            app.UseDeveloperExceptionPage();
-            app.UseRuntimeInfoPage();
-
-            app.UseStaticFiles();
-
-            app.UseMvcWithDefaultRoute();
+            app
+                .UseBrowserLink()
+                .UseDeveloperExceptionPage()
+                .UseStaticFiles()
+                .UseRuntimeInfoPage()
+                .UseMvcWithDefaultRoute();
         }
     }
 }

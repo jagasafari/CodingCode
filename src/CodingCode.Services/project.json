@@ -1,0 +1,18 @@
+﻿{
+  "version": "1.0.0-*",
+  "description": "CodingCode.Services Class Library",
+  "authors": [ "mika" ],
+  "tags": [ "" ],
+  "projectUrl": "",
+  "licenseUrl": "",
+  "frameworks": {
+    "dnx451": { }
+  },
+  "dependencies": {
+    "Microsoft.Dnx.Runtime.Abstractions": "1.0.0-beta8-15724",
+    "CodingCode.Contracts": "1.0.0-*",
+    "ProcessExecution": "1.0.0-*",
+    "CodingCode.Model": "1.0.0-*",
+    "CodingCode.ViewModel": "1.0.0-*"
+  }
+}

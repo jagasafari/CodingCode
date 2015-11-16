@@ -1,4 +1,4 @@
-﻿namespace CodingCode.Web.Logic
+﻿namespace CodingCode.Services
 {
     using System;
     using System.Linq;
@@ -24,14 +24,10 @@
             "DateTime","DateTime?"
         };
 
-        public static bool Check(Type propertyType)
-        {
-            return NonNavTypes.Contains(propertyType);
-        }
+        public static bool Check(Type propertyType) =>
+            NonNavTypes.Contains(propertyType);
 
-        internal static bool Check(string codeLine)
-        {
-            return NonNavTypesNames.Any(codeLine.Contains);
-        }
+        internal static bool Check(string codeLine) =>
+            NonNavTypesNames.Any(codeLine.Contains);
     }
 }

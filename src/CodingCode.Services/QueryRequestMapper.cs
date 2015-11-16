@@ -1,11 +1,11 @@
-﻿namespace CodingCode.Web.Logic
+﻿namespace CodingCode.Services
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
     using Contracts;
-    using ViewModels;
+    using ViewModel;
 
     public class QueryRequestMapper : IQueryRequestMapper
     {

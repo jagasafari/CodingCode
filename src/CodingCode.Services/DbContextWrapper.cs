@@ -1,4 +1,4 @@
-﻿namespace CodingCode.Web.Logic
+﻿namespace CodingCode.Services
 {
     using System;
     using System.Collections.Generic;
@@ -24,9 +24,7 @@
             }
         }
 
-        public bool Exists( string assemblyName )
-        {
-            return DbContextDictionary.ContainsKey( assemblyName );
-        }
+        public bool Exists( string assemblyName )=>
+            DbContextDictionary.ContainsKey( assemblyName );
     }
 }
