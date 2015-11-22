@@ -5,6 +5,7 @@
     using System.IO;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using ProcessExecution;
     using ProcessExecution.Model;
 
@@ -17,8 +18,11 @@
                 Program = DnxInformation.DnxPath,
                 Arguments = "web"
             };
+            var logger = new LoggerFactory()
+                .AddConsole(LogLevel.Information)
+                .CreateLogger(nameof(TestWebApp));
             ProcessExecutor =
-                processProviderServices.LivingProcessExecutor(instructions);
+                processProviderServices.LivingProcessExecutor(instructions, logger);
         }
 
         public HttpClient Client { get; set; }

@@ -3,10 +3,10 @@
     using Contracts;
     using Microsoft.AspNet.Builder;
     using Microsoft.AspNet.Hosting;
-    using Microsoft.Dnx.Runtime;
-    using Microsoft.Framework.Configuration;
-    using Microsoft.Framework.DependencyInjection;
-    using Microsoft.Framework.Logging;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.PlatformAbstractions;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using ProcessExecution;
     using Services;
 
@@ -28,8 +28,8 @@
             services.AddMvc();
 
             services
+                .AddLogging()
                 .AddSingleton(typeof(DbContextWrapper))
-                .AddSingleton<CodingCodeProviderServices>()
                 .AddSingleton<ProcessProviderServices>()
                 .AddScoped<IQueryRequestMapper, QueryRequestMapper>()
                 .AddScoped<IRandomTablePicker, RandomTablePicker>()

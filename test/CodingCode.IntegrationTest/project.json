@@ -9,6 +9,7 @@
     "test": "xunit.runner.dnx"
   },
   "dependencies": {
+    "Microsoft.Extensions.Logging": "1.0.0-rc1-final",
     "CodingCode.Web": "1.0.0-*",
     "Common": "1.0.0-*",
     "xunit": "2.1.0-*",

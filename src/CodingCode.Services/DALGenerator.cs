@@ -8,6 +8,7 @@
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Contracts;
+    using Microsoft.Extensions.Logging;
     using Model;
     using ProcessExecution;
     using ProcessExecution.Model;
@@ -17,11 +18,15 @@
         private readonly string _dnuPath;
         private readonly string _initialDirectory;
         private string[] _tables;
+        private ILogger _logger;
 
-        public DalGenerator()
+        public DalGenerator(ILogger logger)
         {
+            _logger = logger;
             _initialDirectory = Directory.GetCurrentDirectory();
+            
             _dnuPath = DnxInformation.DnuPath;
+            _logger.LogDebug(_dnuPath);
         }
 
         public ProcessProviderServices ProcessProviderServices { get; set; }
@@ -57,7 +62,7 @@
                 Arguments = "restore"
             };
             var processExecutor = ProcessProviderServices
-                .FinishingProcessExecutor(instructions);
+                .FinishingProcessExecutor(instructions, _logger);
 
             await Task.Factory.StartNew(
                 () =>
@@ -150,7 +155,7 @@
                 Arguments = "build"
             };
             var processExecutor =
-                ProcessProviderServices.FinishingProcessExecutor(instructions);
+                ProcessProviderServices.FinishingProcessExecutor(instructions, _logger);
 
             await
                 Task.Factory.StartNew(

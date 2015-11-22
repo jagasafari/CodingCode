@@ -9,7 +9,7 @@
     "dnx451": { }
   },
   "dependencies": {
-    "EntityFramework.Core": "7.0.0-beta8",
+    "EntityFramework.Core": "7.0.0-rc1-final",
     "CodingCode.ViewModel": "1.0.0-*"
   }
 }

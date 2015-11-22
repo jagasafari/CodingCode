@@ -1,21 +1,25 @@
 namespace CodingCode.Services
 {
     using System.Threading.Tasks;
+    using Microsoft.Extensions.PlatformAbstractions;
     using Contracts;
-    using Microsoft.Dnx.Runtime;
     using ViewModel;
+    using Microsoft.Extensions.Logging;
+    using ProcessExecution;
 
     public class ContextGenerator : IContextGenerator
     {
         private readonly IApplicationEnvironment _applicationEnvironment;
-        private readonly CodingCodeProviderServices _codingCodeProviderServices;
+        private readonly DalGenerator _dalGenerator;
+        private readonly ILogger _logger;
         private readonly ProviderModel _providerModel;
 
         public ContextGenerator(
-            IApplicationEnvironment applicationEnvironment)
+            IApplicationEnvironment applicationEnvironment,
+            ILoggerFactory loggerFactory)
         {
             _applicationEnvironment = applicationEnvironment;
-            _codingCodeProviderServices = new CodingCodeProviderServices();
+            _logger=loggerFactory.CreateLogger(nameof(ContextGenerator));
             _providerModel = new ProviderModel();
         }
 
@@ -26,7 +30,9 @@ namespace CodingCode.Services
                 _applicationEnvironment.ApplicationBasePath);
 
             using (
-                var dalGenerator = _codingCodeProviderServices.DalGenerator(dataAccessSettings))
+                var dalGenerator = new DalGenerator(_logger){
+                    DataAccessSettings=dataAccessSettings,
+                    ProcessProviderServices = new ProcessProviderServices()})
             {
                 dalGenerator.CreateDalDirectory();
 

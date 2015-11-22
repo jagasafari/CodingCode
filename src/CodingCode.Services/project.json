@@ -9,7 +9,7 @@
     "dnx451": { }
   },
   "dependencies": {
-    "Microsoft.Dnx.Runtime.Abstractions": "1.0.0-beta8-15724",
+    "Microsoft.Extensions.PlatformAbstractions":"1.0.0-rc1-16202",
     "CodingCode.Contracts": "1.0.0-*",
     "ProcessExecution": "1.0.0-*",
     "CodingCode.Model": "1.0.0-*",
