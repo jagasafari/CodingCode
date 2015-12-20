@@ -17,6 +17,7 @@
     "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0-rc1-final",
     "EntityFramework.MicrosoftSqlServer": "7.0.0-rc1-final",
     "Microsoft.Extensions.PlatformAbstractions":"1.0.0-rc1-final",
+
     "Newtonsoft.Json": "8.0.1-beta1",
     "CodingCode.Contracts": "1.0.0-*",
     "CodingCode.ViewModel": "1.0.0-*",

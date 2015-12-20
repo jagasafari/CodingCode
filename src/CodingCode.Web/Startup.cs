@@ -1,19 +1,18 @@
 ﻿namespace CodingCode.Web
 {
-    using Contracts;
     using Microsoft.AspNet.Builder;
     using Microsoft.AspNet.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.PlatformAbstractions;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using ProcessExecution;
     using Services;
 
     public class Startup
     {
         public Startup(IApplicationEnvironment appEnv)
         {
+            _appEnv=appEnv;
             Configuration = new ConfigurationBuilder()
                     .SetBasePath(appEnv.ApplicationBasePath)
                     .AddJsonFile("config.json")
@@ -23,17 +22,16 @@
 
         public IConfigurationRoot Configuration { get; set; }
 
+        IApplicationEnvironment _appEnv;
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
 
             services
                 .AddLogging()
-                .AddSingleton(typeof(DbContextWrapper))
-                .AddSingleton<ProcessProviderServices>()
-                .AddScoped<IQueryRequestMapper, QueryRequestMapper>()
-                .AddScoped<IRandomTablePicker, RandomTablePicker>()
-                .AddScoped<IContextGenerator, ContextGenerator>()
+                .AddSingleton<ProviderServices>()
+                .AddInstance(_appEnv)
                 .AddInstance(Configuration);
         }
 
@@ -48,7 +46,12 @@
                 .UseDeveloperExceptionPage()
                 .UseStaticFiles()
                 .UseRuntimeInfoPage()
-                .UseMvcWithDefaultRoute();
+                .UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=DataAccessScaffold}/{action=CodeDatabase}/{id?}");
+            });
         }
     }
 }

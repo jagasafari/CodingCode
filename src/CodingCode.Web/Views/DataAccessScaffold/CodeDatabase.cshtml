@@ -1,0 +1,31 @@
+@using CodingCode.ViewModel
+@model DataAccessViewModel
+<form asp-controller="DataAccessScaffold" asp-action="CodeDatabase" method="post" class="form-horizontal" role="form">
+    <hr />
+    <div class="form-group">
+        <label asp-for="ServerName" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="ServerName" class="form-control" placeholder="enter server name"
+                   type="text" value="DELL\SQLEXPRESS" />
+            <span asp-validation-for="ServerName" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="DatabaseName" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="DatabaseName" class="form-control" placeholder="enter server name"
+                   type="text" value="Northwind" />
+            <span asp-validation-for="DatabaseName" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-default pull-right">Connect</button>
+    </div>
+</form>
+
+@section Scripts {
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script type="text/javascript">
+        $(document).ready(disableSubmit);
+    </script>
+}

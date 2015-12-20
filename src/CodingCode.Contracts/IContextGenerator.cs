@@ -5,6 +5,6 @@
 
     public interface IContextGenerator
     {
-        Task<object> GenerateAsync(DalInfoViewModel dalInfo, string assemblyName);
+        Task<object> GenerateAsync(DataAccessViewModel dataAccessViewModel, string assemblyName);
     }
 }

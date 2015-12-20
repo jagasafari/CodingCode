@@ -2,16 +2,14 @@
   "version": "1.0.0-*",
   "description": "CodingCode.Services Class Library",
   "authors": [ "mika" ],
-  "tags": [ "" ],
-  "projectUrl": "",
-  "licenseUrl": "",
   "frameworks": {
     "dnx451": { }
   },
   "dependencies": {
     "Microsoft.Extensions.PlatformAbstractions":"1.0.0-rc1-16202",
+    "Microsoft.Extensions.Logging.Console": "1.0.0-rc1-final",
     "CodingCode.Contracts": "1.0.0-*",
-    "ProcessExecution": "1.0.0-*",
+    "Common.ProcessExecution": "1.0.0-*",
     "CodingCode.Model": "1.0.0-*",
     "CodingCode.ViewModel": "1.0.0-*"
   }

@@ -1,5 +1,5 @@
 {
-  "projects": [ "src", "test", "../Common" ],
+  "projects": [ "src", "test", "../Common/src" ],
   "sdk": {
     "version": "1.0.0-rc1-final",
     "runtime": "clr",

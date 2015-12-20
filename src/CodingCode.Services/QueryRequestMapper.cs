@@ -41,10 +41,10 @@
             var tableValues = new string[numRows, colNames.Count];
             for(var i = 0; i < numRows; i++)
             {
-                table[i].PopulateDictionary();
+                var rowValues = table[i].PopulateDictionary();
                 for(var j = 0; j < colNames.Count; j++)
                 {
-                    dynamic o = table[i].Dictionary[colNames[j]];
+                    dynamic o = rowValues[colNames[j]];
                     tableValues[i, j] = o == null
                         ? ""
                         : string.Format("{0}", o);

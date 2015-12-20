@@ -2,9 +2,6 @@
   "version": "1.0.0-*",
   "description": "CodingCode.Contracts Class Library",
   "authors": [ "mika" ],
-  "tags": [ "" ],
-  "projectUrl": "",
-  "licenseUrl": "",
   "frameworks": {
     "dnx451": { }
   },

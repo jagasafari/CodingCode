@@ -6,11 +6,11 @@
 
     public class DataAccessSettingsMapper
     {
-        public DalInfoViewModel DalInfoViewModel { get; set; }
+        public DataAccessViewModel DataAccessViewModel { get; set; }
         public string ApplicationBasePath { get; set; }
         public string AssemblyName { get; set; }
 
-        public DataAccessSettings Map()
+        public DataAccessConfigurations Map()
         {
             var dalDirectoryParent =
                 Directory.GetParent(ApplicationBasePath)
@@ -24,12 +24,12 @@
                 "CodingCode.Web",
                 "Templates");
 
-            return new DataAccessSettings
+            return new DataAccessConfigurations
             {
-                Database = DalInfoViewModel.Database,
-                Server = DalInfoViewModel.Server,
+                DatabaseName = DataAccessViewModel.DatabaseName,
+                ServerName = DataAccessViewModel.ServerName,
                 AssemblyName = AssemblyName,
-                DalDirectory = dalDirectory,
+                ProjectDirectory = dalDirectory,
                 TemplateDirectory = templateDirectory
             };
         }

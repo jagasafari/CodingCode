@@ -7,7 +7,7 @@
     using Helpers;
     using Xunit;
     using System.Linq;
-    using ProcessExecution;
+    using Common.ProcessExecution;
 
     public class DynamicReportTests :IDisposable
     {
@@ -15,7 +15,7 @@
 
         public DynamicReportTests()
         {
-            _numRandomTests = 10;
+            _numRandomTests = 2;
             TestWebApp = new TestWebApp(new ProcessProviderServices())
             {
                 Client = new HttpClient
@@ -38,8 +38,7 @@
 
         [Fact]
         public async void
-            CodeDatabaseModel_FollowedByRetrieving10RandomTables_IntegrationTest
-            ()
+            CodeDatabaseModel_FollowedByRetrieving10RandomTables_IntegrationTest()
         {
             // make sure web app is hosted
             await TestWebApp.DeployWebApplication();
@@ -49,7 +48,7 @@
 
             // test CodeDatabase Action
             var formActionUrl =
-                @"http://localhost:5000/DynamicRaport/CodeDatabase";
+                @"http://localhost:5000/DataAccessScaffold/CodeDatabase";
             var antiForgeryToken = TokenRetriever.RetrieveAntiForgeryToken(
                 await response.Content.ReadAsStringAsync());
             var postAsync = await TestWebApp.CodeDatabase(antiForgeryToken, formActionUrl);
@@ -59,8 +58,7 @@
             for (var i = 0; i < _numRandomTests; i++)
             {
                 var responseMessage =
-                    await
-                        TestWebApp.GetAsync(
+                    await TestWebApp.GetAsync(
                             @"DynamicRaport/RandomTable?assemblyName=DELL_SQLEXPRESSNorthwind");
                 var readAsStringAsync =
                     await responseMessage.Content.ReadAsStringAsync();

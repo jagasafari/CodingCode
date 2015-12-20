@@ -6,8 +6,9 @@
     using System.Net.Http;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
-    using ProcessExecution;
-    using ProcessExecution.Model;
+    using Common.ProcessExecution;
+    using Common.ProcessExecution.Model;
+    using CodingCode.ViewModel;
 
     public class TestWebApp : IDisposable
     {
@@ -58,9 +59,10 @@
         {
             var formParameters = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("Server",
+                new KeyValuePair<string, string>(nameof(DataAccessViewModel.ServerName),
                     @"DELL\SQLEXPRESS"),
-                new KeyValuePair<string, string>("Database", "Northwind"),
+                new KeyValuePair<string, string>(nameof(DataAccessViewModel.DatabaseName),
+                     "Northwind"),
                 new KeyValuePair<string, string>(
                     "__RequestVerificationToken", antiForgeryToken)
             };
