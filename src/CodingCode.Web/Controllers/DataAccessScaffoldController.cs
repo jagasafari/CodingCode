@@ -9,15 +9,13 @@ namespace CodingCode.Web.Controllers
 
     public class DataAccessScaffoldController : Controller
     {
-        private readonly DbContextWrapper _dbContextWrapper;
         private readonly IContextGenerator _contextGenerator;
         private readonly ILogger _logger;
 
-        public DataAccessScaffoldController(ProviderServices providerServices)
+        public DataAccessScaffoldController(ProviderServices providerServices,
+            ILogger<DataAccessScaffoldController> logger)
         {
-            _dbContextWrapper = providerServices.DbContextWrapper;
-            _contextGenerator = providerServices.ContextGenerator;
-            _logger = providerServices.ConsoleLogger(nameof(DataAccessScaffoldController));
+            _logger = logger;
         }
 
         public IActionResult CodeDatabase()
@@ -29,17 +27,19 @@ namespace CodingCode.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CodeDatabase(
-            DataAccessViewModel dataAccessViewModel)
+            DataAccessViewModel dataAccessViewModel,
+            [FromServices] DbContextWrapper dbContextWrapper,
+            [FromServices] IContextGenerator contextGenerator)
         {
             if (ModelState.IsValid)
             {
                 string assemblyName = string.Concat(dataAccessViewModel.ServerName.Replace("\\", "_"), dataAccessViewModel.DatabaseName);
 
-                if (!_dbContextWrapper.Exists(assemblyName))
+                if (!dbContextWrapper.Exists(assemblyName))
                 {
-                    _dbContextWrapper[assemblyName] =
+                    dbContextWrapper[assemblyName] =
                         await
-                            _contextGenerator.GenerateAsync(dataAccessViewModel, assemblyName);
+                            contextGenerator.GenerateAsync(dataAccessViewModel, assemblyName);
                 }
 
                 return RedirectToAction(nameof(DynamicRaportController.Index), "DynamicRaport", new {assemblyName = assemblyName});

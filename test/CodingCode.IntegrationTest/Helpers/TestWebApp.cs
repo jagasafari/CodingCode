@@ -7,27 +7,22 @@
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using Common.ProcessExecution;
-    using Common.ProcessExecution.Model;
     using CodingCode.ViewModel;
 
     public class TestWebApp : IDisposable
     {
         public TestWebApp(ProcessProviderServices processProviderServices)
         {
-            var instructions = new ProcessInstructions
-            {
-                Program = DnxInformation.DnxPath,
-                Arguments = "web"
-            };
             var logger = new LoggerFactory()
                 .AddConsole(LogLevel.Information)
                 .CreateLogger(nameof(TestWebApp));
+                
             ProcessExecutor =
-                processProviderServices.LivingProcessExecutor(instructions, logger);
+                processProviderServices.LivingExecutor(DnxInformation.DnxPath, "web");
         }
 
         public HttpClient Client { get; set; }
-        private LivingProcessExecutor ProcessExecutor { get; }
+        private LongRunningExecutor ProcessExecutor { get; }
 
         public void Dispose()
         {

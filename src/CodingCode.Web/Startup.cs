@@ -7,22 +7,18 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Services;
+    using Codingcode.Web;
+    using Contracts;
 
     public class Startup
     {
         public Startup(IApplicationEnvironment appEnv)
         {
-            _appEnv=appEnv;
             Configuration = new ConfigurationBuilder()
-                    .SetBasePath(appEnv.ApplicationBasePath)
-                    .AddJsonFile("config.json")
-                    .AddEnvironmentVariables()
-                    .Build();
+                .BuildConfiguration(appEnv.ApplicationBasePath);
         }
 
         public IConfigurationRoot Configuration { get; set; }
-
-        IApplicationEnvironment _appEnv;
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -30,9 +26,11 @@
 
             services
                 .AddLogging()
-                .AddSingleton<ProviderServices>()
-                .AddInstance(_appEnv)
-                .AddInstance(Configuration);
+                .AddTransient<IQueryRequestMapper, QueryRequestMapper>()
+                .AddTransient<IRandomTablePicker, RandomTablePicker>()
+                .AddTransient<IContextGenerator, ContextGenerator>()
+                .AddSingleton(typeof(DbContextWrapper))
+                .AddSingleton<ProviderServices>();
         }
 
         public void Configure(IApplicationBuilder app,

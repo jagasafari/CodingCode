@@ -9,18 +9,6 @@
 
     public class DynamicRaportController : Controller
     {
-        private readonly DbContextWrapper _dbContextWrapper;
-        private readonly IQueryRequestMapper _queryRequestMapper;
-        private readonly IRandomTablePicker _randomTablePicker;
-
-        public DynamicRaportController(
-            ProviderServices providerServices)
-        {
-            _dbContextWrapper = providerServices.DbContextWrapper;
-            _queryRequestMapper = providerServices.QueryRequestMapper;
-            _randomTablePicker = providerServices.RandomTablePicker;
-        }
-        
         public IActionResult Index(string assemblyName){
             if(string.IsNullOrWhiteSpace(assemblyName)){
                 return View("Error");
@@ -30,15 +18,18 @@
         }
         
         [HttpGet]
-        public IActionResult RandomTable(string assemblyName)
+        public IActionResult RandomTable(string assemblyName, 
+                [FromServices] IQueryRequestMapper queryRequestMapper,
+                [FromServices] IRandomTablePicker randomTablePicker,
+                [FromServices] DbContextWrapper dbContextWrapper)
         {
             Type randomType =
-                _randomTablePicker.GetRandomTable(
-                    _dbContextWrapper[assemblyName]);
+                randomTablePicker.GetRandomTable(
+                    dbContextWrapper[assemblyName]);
 
             TableViewModel mapToViewModel =
-                _queryRequestMapper.MapToViewModel(randomType,
-                    _dbContextWrapper[assemblyName]);
+                queryRequestMapper.MapToViewModel(randomType,
+                    dbContextWrapper[assemblyName]);
 
             return View(mapToViewModel);
         }

@@ -9,7 +9,7 @@
     using System.Linq;
     using Common.ProcessExecution;
 
-    public class DynamicReportTests :IDisposable
+    public class DynamicReportTests : IDisposable
     {
         private readonly int _numRandomTests;
 

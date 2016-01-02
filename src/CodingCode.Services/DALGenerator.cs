@@ -11,7 +11,6 @@
     using Microsoft.Extensions.Logging;
     using Model;
     using Common.ProcessExecution;
-    using Common.ProcessExecution.Model;
 
     public class DalGenerator : IDalGenerator
     {
@@ -19,16 +18,13 @@
         private readonly string _initialDirectory;
         private string[] _tables;
         private ILogger _logger;
-        private readonly ProviderServices _providerServices;
         private readonly ProcessProviderServices _processProviderServices;
 
-        public DalGenerator(ProviderServices providerServices)
+        public DalGenerator(ProcessProviderServices processProviderServices, ILogger<DalGenerator> logger)
         {
-            _providerServices = providerServices;
-            _logger = _providerServices.ConsoleLogger(nameof(DalGenerator));
-            _processProviderServices = _providerServices.ProcessProviderServices;
+            _processProviderServices = processProviderServices;
             _initialDirectory = Directory.GetCurrentDirectory();
-
+            _logger = logger;
             _dnuPath = DnxInformation.DnuPath;
         }
 
@@ -60,7 +56,7 @@
         public async Task RestoreAsync()
         {
             await Task.Factory.StartNew(
-                () => _processProviderServices.FinishingExecutor(_dnuPath, "restore", _logger, x => x.Contains("Error"))
+                () => _processProviderServices.FinishingExecutor(_dnuPath, "restore", x => x.Contains("Error"))
                     .Execute());
         }
 
@@ -70,12 +66,12 @@
             string arguments = $"ef dbcontext scaffold {GetConnectionString()} EntityFramework.MicrosoftSqlServer";
             await
                 Task.Factory.StartNew(
-                    () => _processProviderServices.FinishingExecutor(DnxInformation.DnxPath, arguments, _logger, (x) => x.Contains("error"))
+                    () => _processProviderServices.FinishingExecutor(DnxInformation.DnxPath, arguments, (x) => x.Contains("error"))
                     .Execute());
                     
             var contextFileName = $"{DataAccessSettings.DatabaseName}Context.cs";
             if (!File.Exists(Path.Combine(DataAccessSettings.ProjectDirectory, contextFileName)))
-                throw new Exception("Scaffold faile d!");
+                throw new Exception("Scaffold failed!");
             await WrapBug(contextFileName);
         }
 
@@ -164,7 +160,7 @@
         public async Task BuildAsync()
         {
             await Task.Factory.StartNew(
-                    () => _processProviderServices.FinishingExecutor(_dnuPath, "build", _logger, x => !x.Contains("Build succeeded"))
+                    () => _processProviderServices.FinishingExecutor(_dnuPath, "build", x => !x.Contains("Build succeeded"))
                     .Execute());
         }
 
