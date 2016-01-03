@@ -6,7 +6,6 @@ namespace Codingcode.Web{
             string applicationBasePath){
             return builder
                     .SetBasePath(applicationBasePath)
-                    .AddJsonFile("config.json")
                     .AddEnvironmentVariables()
                     .Build();
         }

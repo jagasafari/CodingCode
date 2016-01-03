@@ -5,83 +5,72 @@
     using System.IO;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
     using Common.ProcessExecution;
     using CodingCode.ViewModel;
+    using Common.ProcessExecution.Abstraction;
 
     public class TestWebApp : IDisposable
     {
-        public TestWebApp(ProcessProviderServices processProviderServices)
+        private ITokenRetriever _tokenRetriever;
+        private ILongRunningExecutor _processExecutor;
+        private HttpClient _client;
+        
+        public TestWebApp(ILongRunningExecutorFactory longRunningExecutorFactory, ITokenRetriever tokenRetriever)
         {
-            var logger = new LoggerFactory()
-                .AddConsole(LogLevel.Information)
-                .CreateLogger(nameof(TestWebApp));
-                
-            ProcessExecutor =
-                processProviderServices.LivingExecutor(DnxInformation.DnxPath, "web");
+            _tokenRetriever = tokenRetriever;
+            _processExecutor = longRunningExecutorFactory.Create(DnxInformation.DnxPath, "web");
+
+            _client = new HttpClient
+            {
+                BaseAddress = new Uri("http://localhost:5000")
+            };
         }
-
-        public HttpClient Client { get; set; }
-        private LongRunningExecutor ProcessExecutor { get; }
-
+        
         public void Dispose()
         {
-            Client.Dispose();
-            ProcessExecutor.Dispose();
+            _client.Dispose();
+            _processExecutor.Dispose();
         }
 
-        public async Task<HttpResponseMessage> GetAsync(string actionName)
-        {
-            return await Client.GetAsync(actionName);
-        }
+        public async Task<HttpResponseMessage> GetAsync(string actionName) =>
+            await _client.GetAsync(actionName);
 
         public async Task DeployWebApplication()
         {
             HttpResponseMessage responseMessage = null;
             try
             {
-                responseMessage = await Client.GetAsync(string.Empty);
+                responseMessage = await _client.GetAsync(string.Empty);
             }
-            catch(Exception)
+            catch (Exception)
             {
-                if(responseMessage == null ||
-                   ! responseMessage.IsSuccessStatusCode)
+                if (responseMessage == null || responseMessage.IsSuccessStatusCode)
                     StartHostingWebApplication();
             }
         }
 
-        public async Task<HttpResponseMessage> CodeDatabase(string antiForgeryToken, string formActionUrl)
+        public async Task<HttpResponseMessage> CodeDatabase(string htmlContent, string formActionUrl)
         {
             var formParameters = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>(nameof(DataAccessViewModel.ServerName),
-                    @"DELL\SQLEXPRESS"),
-                new KeyValuePair<string, string>(nameof(DataAccessViewModel.DatabaseName),
-                     "Northwind"),
-                new KeyValuePair<string, string>(
-                    "__RequestVerificationToken", antiForgeryToken)
+                new KeyValuePair<string, string>(nameof(DataAccessViewModel.ServerName), @"DELL\SQLEXPRESS"),
+                new KeyValuePair<string, string>(nameof(DataAccessViewModel.DatabaseName), "Northwind"),
+                new KeyValuePair<string, string>("__RequestVerificationToken", _tokenRetriever.RetrieveAntiForgeryToken(htmlContent))
             };
 
-            var formUrlEncodedContent =
-                new FormUrlEncodedContent(formParameters.ToArray());
+            var formUrlEncodedContent = new FormUrlEncodedContent(formParameters.ToArray());
 
-            var re= await
-                    Client.PostAsync(formActionUrl,
-                        formUrlEncodedContent);
-            return re;
+            return await _client.PostAsync(formActionUrl, formUrlEncodedContent);
         }
 
         private void StartHostingWebApplication()
         {
             var currentDirectory = Directory.GetCurrentDirectory();
-            var directoryInfo =
-                Directory.GetParent(
-                    Directory.GetParent(currentDirectory).FullName);
-            var presentationPath = Path.Combine(
-                directoryInfo.FullName,
-                "src", "CodingCode.Web");
+            var directoryInfo = Directory.GetParent(Directory.GetParent(currentDirectory).FullName);
+            var presentationPath = Path.Combine(directoryInfo.FullName, "src", "CodingCode.Web");
+            
             Directory.SetCurrentDirectory(presentationPath);
-            ProcessExecutor.Execute();
+            _processExecutor.Execute();
             Directory.SetCurrentDirectory(currentDirectory);
         }
     }

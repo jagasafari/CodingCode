@@ -1,8 +1,7 @@
 ﻿namespace CodingCode.Web.Controllers
 {
     using System;
-    
-    using Contracts;
+    using CodingCode.Abstraction;
     using Microsoft.AspNet.Mvc;
     using Services;
     using ViewModel;

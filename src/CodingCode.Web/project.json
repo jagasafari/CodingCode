@@ -19,7 +19,7 @@
     "Microsoft.Extensions.PlatformAbstractions":"1.0.0-rc1-final",
 
     "Newtonsoft.Json": "8.0.1-beta1",
-    "CodingCode.Contracts": "1.0.0-*",
+    "CodingCode.Abstraction": "1.0.0-*",
     "CodingCode.ViewModel": "1.0.0-*",
     "CodingCode.Services": "1.0.0-*"
   },

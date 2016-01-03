@@ -1,4 +1,4 @@
-﻿namespace CodingCode.Contracts
+﻿namespace CodingCode.Abstraction
 {
     using System;
     using ViewModel;

@@ -1,28 +1,19 @@
 ﻿namespace CodingCode.IntegrationTest
 {
-    using System;
     using System.Collections.Generic;
-    using System.Net.Http;
     using System.Threading;
-    using Helpers;
     using Xunit;
     using System.Linq;
-    using Common.ProcessExecution;
 
-    public class DynamicReportTests : IDisposable
+    public class DynamicReportTests
     {
         private readonly int _numRandomTests;
+        private ProviderServices _providerServices;
 
         public DynamicReportTests()
         {
             _numRandomTests = 2;
-            TestWebApp = new TestWebApp(new ProcessProviderServices())
-            {
-                Client = new HttpClient
-                {
-                    BaseAddress = new Uri("http://localhost:5000")
-                }
-            };
+            _providerServices = new ProviderServices();
         }
 
         public IEnumerable<string> TableNames => new[]
@@ -33,42 +24,32 @@
                 "Order_Details", "Orders", "Products", "Region",
                 "Shippers", "Suppliers", "Territories", "sysdiagrams"
             };
-        public TestWebApp TestWebApp { get; set; }
-
 
         [Fact]
-        public async void
-            CodeDatabaseModel_FollowedByRetrieving10RandomTables_IntegrationTest()
+        public async void CodeDatabaseModel_FollowedByRetrieving10RandomTables_IntegrationTest()
         {
-            // make sure web app is hosted
-            await TestWebApp.DeployWebApplication();
-            Thread.Sleep(5000);
-            var response = await TestWebApp.Client.GetAsync(string.Empty);
-            Assert.True(response.IsSuccessStatusCode);
-
-            // test CodeDatabase Action
-            var formActionUrl =
-                @"http://localhost:5000/DataAccessScaffold/CodeDatabase";
-            var antiForgeryToken = TokenRetriever.RetrieveAntiForgeryToken(
-                await response.Content.ReadAsStringAsync());
-            var postAsync = await TestWebApp.CodeDatabase(antiForgeryToken, formActionUrl);
-            Assert.True(postAsync.IsSuccessStatusCode);
-
-            // test RandomTable action
-            for (var i = 0; i < _numRandomTests; i++)
+            using (var testWebApp = _providerServices.TestWebApp)
             {
-                var responseMessage =
-                    await TestWebApp.GetAsync(
-                            @"DynamicRaport/RandomTable?assemblyName=DELL_SQLEXPRESSNorthwind");
-                var readAsStringAsync =
-                    await responseMessage.Content.ReadAsStringAsync();
-                Assert.True(TableNames.Any(name => readAsStringAsync.Contains(name)));
-            }
-        }
+                // make sure web app is hosted
+                await testWebApp.DeployWebApplication();
+                Thread.Sleep(5000);
+                var response = await testWebApp.GetAsync(string.Empty);
+                Assert.True(response.IsSuccessStatusCode);
 
-        public void Dispose()
-        {
-            TestWebApp.Dispose();
+                // test CodeDatabase Action
+                var formActionUrl = @"http://localhost:5000/DataAccessScaffold/CodeDatabase";
+                
+                var postAsync = await testWebApp.CodeDatabase(await response.Content.ReadAsStringAsync(), formActionUrl);
+                Assert.True(postAsync.IsSuccessStatusCode);
+
+                // test RandomTable action
+                for (var i = 0; i < _numRandomTests; i++)
+                {
+                    var responseMessage = await testWebApp.GetAsync(@"DynamicRaport/RandomTable?assemblyName=DELL_SQLEXPRESSNorthwind");
+                    var readAsStringAsync = await responseMessage.Content.ReadAsStringAsync();
+                    Assert.True(TableNames.Any(name => readAsStringAsync.Contains(name)));
+                }
+            }
         }
     }
 }

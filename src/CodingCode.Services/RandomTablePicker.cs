@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    using Contracts;
+    using CodingCode.Abstraction;
     using Microsoft.Data.Entity;
 
     public class RandomTablePicker : IRandomTablePicker

@@ -1,7 +1,7 @@
 namespace CodingCode.Web.Controllers
 {
     using System.Threading.Tasks;
-    using CodingCode.Contracts;
+    using CodingCode.Abstraction;
     using CodingCode.Services;
     using CodingCode.ViewModel;
     using Microsoft.AspNet.Mvc;
@@ -12,8 +12,7 @@ namespace CodingCode.Web.Controllers
         private readonly IContextGenerator _contextGenerator;
         private readonly ILogger _logger;
 
-        public DataAccessScaffoldController(ProviderServices providerServices,
-            ILogger<DataAccessScaffoldController> logger)
+        public DataAccessScaffoldController(ILogger<DataAccessScaffoldController> logger)
         {
             _logger = logger;
         }

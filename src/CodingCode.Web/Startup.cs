@@ -8,7 +8,6 @@
     using Microsoft.Extensions.Logging;
     using Services;
     using Codingcode.Web;
-    using Contracts;
 
     public class Startup
     {
@@ -26,11 +25,7 @@
 
             services
                 .AddLogging()
-                .AddTransient<IQueryRequestMapper, QueryRequestMapper>()
-                .AddTransient<IRandomTablePicker, RandomTablePicker>()
-                .AddTransient<IContextGenerator, ContextGenerator>()
-                .AddSingleton(typeof(DbContextWrapper))
-                .AddSingleton<ProviderServices>();
+                .AddCodingCodeServices();
         }
 
         public void Configure(IApplicationBuilder app,

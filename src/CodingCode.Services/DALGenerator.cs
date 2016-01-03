@@ -7,10 +7,11 @@
     using System.Reflection;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
-    using Contracts;
     using Microsoft.Extensions.Logging;
     using Model;
     using Common.ProcessExecution;
+    using Common.ProcessExecution.Abstraction;
+    using CodingCode.Abstraction;
 
     public class DalGenerator : IDalGenerator
     {
@@ -18,11 +19,11 @@
         private readonly string _initialDirectory;
         private string[] _tables;
         private ILogger _logger;
-        private readonly ProcessProviderServices _processProviderServices;
+        private readonly IFinishingExecutorFactory _executorFactory;
 
-        public DalGenerator(ProcessProviderServices processProviderServices, ILogger<DalGenerator> logger)
+        public DalGenerator(IFinishingExecutorFactory executorFactory, ILogger<DalGenerator> logger)
         {
-            _processProviderServices = processProviderServices;
+            _executorFactory = executorFactory;
             _initialDirectory = Directory.GetCurrentDirectory();
             _logger = logger;
             _dnuPath = DnxInformation.DnuPath;
@@ -56,7 +57,7 @@
         public async Task RestoreAsync()
         {
             await Task.Factory.StartNew(
-                () => _processProviderServices.FinishingExecutor(_dnuPath, "restore", x => x.Contains("Error"))
+                () => _executorFactory.Create(_dnuPath, "restore", x => x.Contains("Error"))
                     .Execute());
         }
 
@@ -66,7 +67,7 @@
             string arguments = $"ef dbcontext scaffold {GetConnectionString()} EntityFramework.MicrosoftSqlServer";
             await
                 Task.Factory.StartNew(
-                    () => _processProviderServices.FinishingExecutor(DnxInformation.DnxPath, arguments, (x) => x.Contains("error"))
+                    () => _executorFactory.Create(DnxInformation.DnxPath, arguments, (x) => x.Contains("error"))
                     .Execute());
                     
             var contextFileName = $"{DataAccessSettings.DatabaseName}Context.cs";
@@ -160,7 +161,7 @@
         public async Task BuildAsync()
         {
             await Task.Factory.StartNew(
-                    () => _processProviderServices.FinishingExecutor(_dnuPath, "build", x => !x.Contains("Build succeeded"))
+                    () => _executorFactory.Create(_dnuPath, "build", x => !x.Contains("Build succeeded"))
                     .Execute());
         }
 
