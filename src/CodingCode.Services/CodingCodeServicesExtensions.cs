@@ -10,12 +10,11 @@ namespace CodingCode.Services
             return serviceCollection
                 .AddProceesProviderServices()
                 
-                .AddSingleton<ModelsProvider>()
-                
                 .AddTransient<IDalGeneratorFactory, DalGeneratorFactory>()
                 .AddTransient<IQueryRequestMapper, QueryRequestMapper>()
                 .AddTransient<IRandomTablePicker, RandomTablePicker>()
                 .AddTransient<IContextGenerator, ContextGenerator>()
+                .AddTransient<IDataAccessSettingsMapper, DataAccessSettingsMapper>()
                 
                 .AddSingleton(typeof(DbContextWrapper));
         }

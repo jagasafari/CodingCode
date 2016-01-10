@@ -1,10 +1,9 @@
 ﻿namespace CodingCode.Abstraction
 {
-    using System;
     using ViewModel;
 
     public interface IQueryRequestMapper
     {
-        TableViewModel MapToViewModel(Type randomType, dynamic dbContext);
+        TableViewModel MapToViewModel<T>(dynamic dbContext) where T:class;
     }
 }

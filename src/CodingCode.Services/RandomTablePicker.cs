@@ -1,7 +1,6 @@
 ﻿namespace CodingCode.Services
 {
     using System;
-    using System.Collections.Generic;
     using CodingCode.Abstraction;
     using Microsoft.Data.Entity;
 
@@ -10,17 +9,16 @@
         public Type GetRandomTable(DbContext ctx)
         {
             var types = ctx.GetType().Assembly.GetTypes();
-            var names = new List<Type>();
-            foreach(var t in types)
+            
+            while (true)
             {
-                var nam = t.Name;
-                if(nam.Contains("Context")) continue;
-                if(nam.Contains("<")) continue;
-                names.Add(t);
+                var randomIndex = new Random().Next(types.Length);
+                if(IsEntityType(types[randomIndex].Name)) return types[randomIndex];
             }
-            var next = new Random()
-                .Next(names.Count);
-            return names[next];
+        }
+        
+        private static bool IsEntityType(string typeName){
+           return !typeName.Contains("Context") && !typeName.Contains("<>"); 
         }
     }
 }

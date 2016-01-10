@@ -7,6 +7,8 @@
   },
   "dependencies": {
     "EntityFramework.Core": "7.0.0-rc1-final",
-    "CodingCode.ViewModel": "1.0.0-*"
+    "CodingCode.ViewModel": "1.0.0-*",
+    "CodingCode.Model":"1.0.0-*",
+    "Common.ProcessExecution":"1.0.0-*"
   }
 }

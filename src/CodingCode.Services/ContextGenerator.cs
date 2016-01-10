@@ -2,24 +2,20 @@ namespace CodingCode.Services
 {
     using System.Threading.Tasks;
     using CodingCode.Abstraction;
-    using Microsoft.Extensions.PlatformAbstractions;
     using ViewModel;
 
     public class ContextGenerator : IContextGenerator
     {
         private readonly IDalGeneratorFactory _dalGeneratorFactory;
-        private readonly string _appBasePath;
 
-        public ContextGenerator(IDalGeneratorFactory dalGeneratorFactory, IApplicationEnvironment env)
+        public ContextGenerator(IDalGeneratorFactory dalGeneratorFactory)
         {
             _dalGeneratorFactory = dalGeneratorFactory;
-            _appBasePath = env.ApplicationBasePath;
         }
 
-        public async Task<object> GenerateAsync(DataAccessViewModel dalInfo,
-            string assemblyName)
+        public async Task<object> GenerateAsync(DataAccessViewModel dalInfo, string assemblyName)
         {
-            using (var dalGenerator = _dalGeneratorFactory.Create(dalInfo, assemblyName, _appBasePath))
+            using (var dalGenerator = _dalGeneratorFactory.Create(dalInfo, assemblyName))
             {
                 dalGenerator.CreateDalDirectory();
 

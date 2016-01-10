@@ -9,27 +9,26 @@
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using Model;
-    using Common.ProcessExecution;
     using Common.ProcessExecution.Abstraction;
     using CodingCode.Abstraction;
 
     public class DalGenerator : IDalGenerator
     {
-        private readonly string _dnuPath;
         private readonly string _initialDirectory;
         private string[] _tables;
         private ILogger _logger;
         private readonly IFinishingExecutorFactory _executorFactory;
+        private readonly DnxOptions _options;
 
-        public DalGenerator(IFinishingExecutorFactory executorFactory, ILogger<DalGenerator> logger)
+        public DalGenerator(IFinishingExecutorFactory executorFactory, ILogger<DalGenerator> logger, DnxOptions options)
         {
             _executorFactory = executorFactory;
             _initialDirectory = Directory.GetCurrentDirectory();
             _logger = logger;
-            _dnuPath = DnxInformation.DnuPath;
+            _options = options;
         }
 
-        public DataAccessConfigurations DataAccessSettings { get; set; }
+        public DataAccessConfigurations DataAccessConfiguratios { get; set; }
 
         public void Dispose()
         {
@@ -38,17 +37,17 @@
 
         public void CreateDalDirectory()
         {
-            ManageDirectory(DataAccessSettings.ProjectDirectory);
-            Directory.CreateDirectory(DataAccessSettings.ProjectDirectory);
-            Directory.SetCurrentDirectory(DataAccessSettings.ProjectDirectory);
+            ManageDirectory(DataAccessConfiguratios.ProjectDirectory);
+            Directory.CreateDirectory(DataAccessConfiguratios.ProjectDirectory);
+            Directory.SetCurrentDirectory(DataAccessConfiguratios.ProjectDirectory);
         }
 
         public void CopyProjectJson()
         {
             var templateFile = "project.json.template";
             var templatePath =
-                Path.Combine(DataAccessSettings.TemplateDirectory, templateFile);
-            var destinationPath = Path.Combine(DataAccessSettings.ProjectDirectory,
+                Path.Combine(DataAccessConfiguratios.TemplateDirectory, templateFile);
+            var destinationPath = Path.Combine(DataAccessConfiguratios.ProjectDirectory,
                 "project.json");
             File.Copy(templatePath, destinationPath);
         }
@@ -57,7 +56,7 @@
         public async Task RestoreAsync()
         {
             await Task.Factory.StartNew(
-                () => _executorFactory.Create(_dnuPath, "restore", x => x.Contains("Error"))
+                () => _executorFactory.Create(_options.Dnu, "restore", x => x.Contains("Error"))
                     .Execute());
         }
 
@@ -67,11 +66,11 @@
             string arguments = $"ef dbcontext scaffold {GetConnectionString()} EntityFramework.MicrosoftSqlServer";
             await
                 Task.Factory.StartNew(
-                    () => _executorFactory.Create(DnxInformation.DnxPath, arguments, (x) => x.Contains("error"))
+                    () => _executorFactory.Create(_options.Dnx, arguments, (x) => x.Contains("error"))
                     .Execute());
                     
-            var contextFileName = $"{DataAccessSettings.DatabaseName}Context.cs";
-            if (!File.Exists(Path.Combine(DataAccessSettings.ProjectDirectory, contextFileName)))
+            var contextFileName = $"{DataAccessConfiguratios.DatabaseName}Context.cs";
+            if (!File.Exists(Path.Combine(DataAccessConfiguratios.ProjectDirectory, contextFileName)))
                 throw new Exception("Scaffold failed!");
             await WrapBug(contextFileName);
         }
@@ -100,8 +99,8 @@
 
         public void CodeContext()
         {
-            var contextFile = Path.Combine(DataAccessSettings.ProjectDirectory,
-                $"{DataAccessSettings.DatabaseName}Context.cs");
+            var contextFile = Path.Combine(DataAccessConfiguratios.ProjectDirectory,
+                $"{DataAccessConfiguratios.DatabaseName}Context.cs");
             var efScaffoldCode = File.ReadAllLines(contextFile);
             using (var streamWriter = new StreamWriter(contextFile))
             {
@@ -132,7 +131,7 @@
                 Task.Factory.StartNew(
                     () => Parallel.ForEach(_tables, table =>
                     {
-                        var entityFile = Path.Combine(DataAccessSettings.ProjectDirectory,
+                        var entityFile = Path.Combine(DataAccessConfiguratios.ProjectDirectory,
                             $"{table}.cs");
                         var entityCode = File.ReadAllLines(entityFile);
                         using (
@@ -161,7 +160,7 @@
         public async Task BuildAsync()
         {
             await Task.Factory.StartNew(
-                    () => _executorFactory.Create(_dnuPath, "build", x => !x.Contains("Build succeeded"))
+                    () => _executorFactory.Create(_options.Dnu, "build", x => !x.Contains("Build succeeded"))
                     .Execute());
         }
 
@@ -170,7 +169,7 @@
             var assemblyPath =
                 Path.Combine(Directory.GetCurrentDirectory(),
                     "bin", "Debug", "dnx451",
-                    $"{DataAccessSettings.AssemblyName}.dll");
+                    $"{DataAccessConfiguratios.AssemblyName}.dll");
             var typeInfos =
                 Assembly.LoadFrom(assemblyPath).DefinedTypes.ToArray();
 
@@ -187,7 +186,7 @@
         private string GetConnectionString()
         {
             return
-                $"Server={DataAccessSettings.ServerName};Database={DataAccessSettings.DatabaseName};Trusted_Connection=True;MultipleActiveResultSets=true";
+                $"Server={DataAccessConfiguratios.ServerName};Database={DataAccessConfiguratios.DatabaseName};Trusted_Connection=True;MultipleActiveResultSets=true";
         }
 
         private bool IsRecognizedTableColumn(string codeLine)
@@ -201,7 +200,7 @@
         {
             var templateFile = "Entity.template";
             var templatePath =
-                Path.Combine(DataAccessSettings.TemplateDirectory, templateFile);
+                Path.Combine(DataAccessConfiguratios.TemplateDirectory, templateFile);
             var customCode = File.ReadAllLines(templatePath);
             streamWriter.WriteLine(AddStaticTypeNameProperty(entityTypeName, customCode[0]));
             for (var i = 1; i < 5; i++)
@@ -233,10 +232,10 @@
         {
             var templateFile = "Context.template";
             var templatePath =
-                Path.Combine(DataAccessSettings.TemplateDirectory, templateFile);
+                Path.Combine(DataAccessConfiguratios.TemplateDirectory, templateFile);
             var customCode = File.ReadAllLines(templatePath);
             customCode[0] = customCode[0].Replace("AssemblyName",
-                $@"""{DataAccessSettings.AssemblyName}""");
+                $@"""{DataAccessConfiguratios.AssemblyName}""");
             streamWriter.WriteLine(customCode[0]);
             streamWriter.WriteLine(customCode[1]);
             streamWriter.WriteLine(customCode[2]);
@@ -244,10 +243,10 @@
             foreach (var tableName in tableNames)
             {
                 string check =
-                    $"           if (tableType.Equals({DataAccessSettings.AssemblyName}.{tableName}.TypeName))";
+                    $"           if (typeof(T).FullName.Equals({DataAccessConfiguratios.AssemblyName}.{tableName}.TypeName))";
                 streamWriter.WriteLine(check);
                 string returnTable =
-                    $"                 return {tableName}.ToArray();";
+                    $"                 return {tableName};";
                 streamWriter.WriteLine(returnTable);
             }
             streamWriter.WriteLine(customCode[3]);
@@ -257,7 +256,7 @@
 
         private void ManageDirectory(string dalDirectory)
         {
-            if (Directory.Exists(DataAccessSettings.ProjectDirectory))
+            if (Directory.Exists(DataAccessConfiguratios.ProjectDirectory))
                 ClearFolder(dalDirectory);
 
             //to-do swap with ClearFolder

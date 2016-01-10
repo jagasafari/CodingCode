@@ -2,27 +2,26 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using Common.ProcessExecution;
-    using CodingCode.ViewModel;
     using Common.ProcessExecution.Abstraction;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.OptionsModel;
 
-    public class TestWebApp : IDisposable
+    public class TestWebApp : ITestWebApp
     {
-        private ITokenRetriever _tokenRetriever;
         private ILongRunningExecutor _processExecutor;
         private HttpClient _client;
         
-        public TestWebApp(ILongRunningExecutorFactory longRunningExecutorFactory, ITokenRetriever tokenRetriever)
+        public TestWebApp(ILongRunningExecutorFactory longRunningExecutorFactory, 
+            IOptions<TestOptions> options, ILogger<TestWebApp> logger)
         {
-            _tokenRetriever = tokenRetriever;
-            _processExecutor = longRunningExecutorFactory.Create(DnxInformation.DnxPath, "web");
+            var testOptions = options.Value;
+            _processExecutor = longRunningExecutorFactory.Create(testOptions.Dnx, $"-p {testOptions.ProjectToTest} web");
 
             _client = new HttpClient
             {
-                BaseAddress = new Uri("http://localhost:5000")
+                BaseAddress = new Uri(testOptions.WebBaseUri)
             };
         }
         
@@ -31,10 +30,7 @@
             _client.Dispose();
             _processExecutor.Dispose();
         }
-
-        public async Task<HttpResponseMessage> GetAsync(string actionName) =>
-            await _client.GetAsync(actionName);
-
+        
         public async Task DeployWebApplication()
         {
             HttpResponseMessage responseMessage = null;
@@ -45,33 +41,17 @@
             catch (Exception)
             {
                 if (responseMessage == null || responseMessage.IsSuccessStatusCode)
-                    StartHostingWebApplication();
+                     _processExecutor.Execute();
             }
         }
+        
+        public async Task<HttpResponseMessage> GetAsync(string actionName) =>
+            await _client.GetAsync(actionName);
 
-        public async Task<HttpResponseMessage> CodeDatabase(string htmlContent, string formActionUrl)
-        {
-            var formParameters = new List<KeyValuePair<string, string>>
-            {
-                new KeyValuePair<string, string>(nameof(DataAccessViewModel.ServerName), @"DELL\SQLEXPRESS"),
-                new KeyValuePair<string, string>(nameof(DataAccessViewModel.DatabaseName), "Northwind"),
-                new KeyValuePair<string, string>("__RequestVerificationToken", _tokenRetriever.RetrieveAntiForgeryToken(htmlContent))
-            };
 
-            var formUrlEncodedContent = new FormUrlEncodedContent(formParameters.ToArray());
-
-            return await _client.PostAsync(formActionUrl, formUrlEncodedContent);
-        }
-
-        private void StartHostingWebApplication()
-        {
-            var currentDirectory = Directory.GetCurrentDirectory();
-            var directoryInfo = Directory.GetParent(Directory.GetParent(currentDirectory).FullName);
-            var presentationPath = Path.Combine(directoryInfo.FullName, "src", "CodingCode.Web");
-            
-            Directory.SetCurrentDirectory(presentationPath);
-            _processExecutor.Execute();
-            Directory.SetCurrentDirectory(currentDirectory);
-        }
+        public async Task<HttpResponseMessage> PostAsync(string formActionUrl, 
+            IEnumerable<KeyValuePair<string, string>> formUrlEncodedContent) =>
+                await _client.PostAsync(formActionUrl, new FormUrlEncodedContent(formUrlEncodedContent));
+        
     }
 }

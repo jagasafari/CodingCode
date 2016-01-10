@@ -4,16 +4,20 @@
     using System.Threading;
     using Xunit;
     using System.Linq;
+    using CodingCode.ViewModel;
+    using Microsoft.Extensions.Logging;
 
     public class DynamicReportTests
     {
         private readonly int _numRandomTests;
         private ProviderServices _providerServices;
+        private ILogger<DynamicReportTests> _logger;
 
         public DynamicReportTests()
         {
             _numRandomTests = 2;
             _providerServices = new ProviderServices();
+            _logger = _providerServices.TestLogger;
         }
 
         public IEnumerable<string> TableNames => new[]
@@ -24,6 +28,8 @@
                 "Order_Details", "Orders", "Products", "Region",
                 "Shippers", "Suppliers", "Territories", "sysdiagrams"
             };
+
+        object TokenRetriever { get; set; }
 
         [Fact]
         public async void CodeDatabaseModel_FollowedByRetrieving10RandomTables_IntegrationTest()
@@ -38,8 +44,16 @@
 
                 // test CodeDatabase Action
                 var formActionUrl = @"http://localhost:5000/DataAccessScaffold/CodeDatabase";
+                var htmlContent = await response.Content.ReadAsStringAsync();
                 
-                var postAsync = await testWebApp.CodeDatabase(await response.Content.ReadAsStringAsync(), formActionUrl);
+                var formParameters = new KeyValuePair<string, string>[]
+                {
+                    new KeyValuePair<string, string>(nameof(DataAccessViewModel.ServerName), @"DELL\SQLEXPRESS"),
+                    new KeyValuePair<string, string>(nameof(DataAccessViewModel.DatabaseName), "Northwind"),
+                    new KeyValuePair<string, string>("__RequestVerificationToken", _providerServices.TokenRetriever.RetrieveAntiForgeryToken(htmlContent))
+                };
+            
+                var postAsync = await testWebApp.PostAsync(formActionUrl, formParameters);
                 Assert.True(postAsync.IsSuccessStatusCode);
 
                 // test RandomTable action

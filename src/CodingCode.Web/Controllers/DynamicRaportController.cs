@@ -1,34 +1,39 @@
 ﻿namespace CodingCode.Web.Controllers
 {
     using System;
+    using System.Reflection;
     using CodingCode.Abstraction;
+    using Common.Core;
     using Microsoft.AspNet.Mvc;
     using Services;
     using ViewModel;
 
     public class DynamicRaportController : Controller
     {
-        public IActionResult Index(string assemblyName){
-            if(string.IsNullOrWhiteSpace(assemblyName)){
-                return View("Error");
+        [HttpGet]
+        public IActionResult Index(string assemblyName)
+        {
+            try
+            {
+                ViewData[nameof(assemblyName)] = Check.NotNullOrWhiteSpace(assemblyName, nameof(assemblyName));
             }
-            ViewData["assemblyName"]=assemblyName;
+            catch (Exception)
+            {
+                return View(nameof(HomeController.Error));
+            }
             return View();
         }
-        
+
         [HttpGet]
-        public IActionResult RandomTable(string assemblyName, 
-                [FromServices] IQueryRequestMapper queryRequestMapper,
+        public IActionResult RandomTable(string assemblyName,
                 [FromServices] IRandomTablePicker randomTablePicker,
+                [FromServices] IQueryRequestMapper queryRequestMapper,
                 [FromServices] DbContextWrapper dbContextWrapper)
         {
-            Type randomType =
-                randomTablePicker.GetRandomTable(
-                    dbContextWrapper[assemblyName]);
-
-            TableViewModel mapToViewModel =
-                queryRequestMapper.MapToViewModel(randomType,
-                    dbContextWrapper[assemblyName]);
+            Type randomType = randomTablePicker.GetRandomTable(dbContextWrapper[assemblyName]);
+            
+            MethodInfo generic = typeof(IQueryRequestMapper).GetMethod(nameof(IQueryRequestMapper.MapToViewModel)).MakeGenericMethod(randomType);
+            TableViewModel mapToViewModel = (TableViewModel)generic.Invoke(queryRequestMapper, new object[] { dbContextWrapper[assemblyName] });
 
             return View(mapToViewModel);
         }

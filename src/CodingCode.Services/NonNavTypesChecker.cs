@@ -3,7 +3,7 @@
     using System;
     using System.Linq;
 
-    internal class NonNavTypesChecker
+    internal static class NonNavTypesChecker
     {
         public static Type[] NonNavTypes =
         {
@@ -24,10 +24,8 @@
             "DateTime","DateTime?"
         };
 
-        public static bool Check(Type propertyType) =>
-            NonNavTypes.Contains(propertyType);
+        public static bool Check(Type propertyType) => NonNavTypes.Contains(propertyType);
 
-        internal static bool Check(string codeLine) =>
-            NonNavTypesNames.Any(codeLine.Contains);
+        internal static bool Check(string codeLine) => NonNavTypesNames.Any(codeLine.Contains);
     }
 }

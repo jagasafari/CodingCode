@@ -1,34 +1,29 @@
 ﻿namespace CodingCode.Services
 {
     using System.IO;
+    using CodingCode.Abstraction;
+    using Microsoft.Extensions.OptionsModel;
     using Model;
     using ViewModel;
 
-    public class DataAccessSettingsMapper
+    public class DataAccessSettingsMapper : IDataAccessSettingsMapper
     {
-        public DataAccessViewModel DataAccessViewModel { get; set; }
-        public string ApplicationBasePath { get; set; }
-        public string AssemblyName { get; set; }
-
-        public DataAccessConfigurations Map()
+        private DalProjectOptions _options;
+        public DataAccessSettingsMapper(IOptions<DalProjectOptions> options)
         {
-            var dalDirectoryParent =
-                Directory.GetParent(ApplicationBasePath)
-                    .FullName;
+            _options = options.Value;
+        }
+        public DataAccessConfigurations Map(DataAccessViewModel dataAccessViewModel, string assemblyName)
+        {
+            var dalDirectory = Path.Combine(_options.DalParentDirectory, assemblyName);
 
-            var dalDirectory = Path.Combine(
-                dalDirectoryParent, AssemblyName);
-
-            var templateDirectory = Path.Combine(
-                Directory.GetParent(dalDirectory).FullName,
-                "CodingCode.Web",
-                "Templates");
+            var templateDirectory = Path.Combine(Directory.GetParent(dalDirectory).FullName, _options.TemplateDirectory);
 
             return new DataAccessConfigurations
             {
-                DatabaseName = DataAccessViewModel.DatabaseName,
-                ServerName = DataAccessViewModel.ServerName,
-                AssemblyName = AssemblyName,
+                DatabaseName = dataAccessViewModel.DatabaseName,
+                ServerName = dataAccessViewModel.ServerName,
+                AssemblyName = assemblyName,
                 ProjectDirectory = dalDirectory,
                 TemplateDirectory = templateDirectory
             };

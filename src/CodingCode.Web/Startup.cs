@@ -7,14 +7,17 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Services;
-    using Codingcode.Web;
+    using CodingCode.Model;
 
     public class Startup
     {
         public Startup(IApplicationEnvironment appEnv)
         {
             Configuration = new ConfigurationBuilder()
-                .BuildConfiguration(appEnv.ApplicationBasePath);
+                    .SetBasePath(appEnv.ApplicationBasePath)
+                    .AddJsonFile("config.json")
+                    .AddEnvironmentVariables()
+                    .Build();
         }
 
         public IConfigurationRoot Configuration { get; set; }
@@ -24,6 +27,10 @@
             services.AddMvc();
 
             services
+                .AddOptions()
+                .Configure<DnxOptions>(Configuration)
+                .Configure<DalProjectOptions>(Configuration)
+                
                 .AddLogging()
                 .AddCodingCodeServices();
         }

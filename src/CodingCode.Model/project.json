@@ -1,9 +1,13 @@
 ﻿{
-  "version": "1.0.0-*",
-  "description": "CodingCode.Model Class Library",
-  "authors": [ "mika" ],
-
-  "frameworks": {
-    "dnx451": { }
-  }
+    "version": "1.0.0-*",
+    "description": "CodingCode.Model Class Library",
+    "authors": [
+        "mika"
+    ],
+    "dependencies": {
+        "Common.Core":"1.0.0-*"
+    },
+    "frameworks": {
+        "dnx451": {}
+    }
 }

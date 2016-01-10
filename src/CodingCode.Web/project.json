@@ -21,7 +21,8 @@
     "Newtonsoft.Json": "8.0.1-beta1",
     "CodingCode.Abstraction": "1.0.0-*",
     "CodingCode.ViewModel": "1.0.0-*",
-    "CodingCode.Services": "1.0.0-*"
+    "CodingCode.Services": "1.0.0-*",
+    "Common.ProcessExecution":"1.0.0-*"
   },
   "commands": {
     "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --ASPNET_ENV development --server.urls http://localhost:5000"

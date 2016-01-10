@@ -1,55 +1,49 @@
 ﻿namespace CodingCode.Services
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
     using CodingCode.Abstraction;
+    using Microsoft.Data.Entity;
     using ViewModel;
 
     public class QueryRequestMapper : IQueryRequestMapper
     {
-        public TableViewModel MapToViewModel(Type randomType,
-            dynamic dbContext)
+        public TableViewModel MapToViewModel<T>(dynamic dbContext) where T : class
         {
-            var colNames = GetColumnNames(randomType);
-            var tableValues = GetValues(randomType, colNames, dbContext);
+            var colNames = GetColumnNames<T>();
+            var tableValues = GetValues<T>(colNames, dbContext);
 
             return new TableViewModel
             {
-                TableName = randomType.Name,
+                TableName = typeof(T).Name,
                 ColumnNames = colNames,
                 Values = tableValues
             };
         }
 
-        private static string[] GetColumnNames(Type randomType)
+        private static string[] GetColumnNames<T>()
         {
-            var propertyInfos = randomType.GetTypeInfo().GetProperties();
-            var colNames = ( from propertyInfo in propertyInfos
-                where NonNavTypesChecker.Check(propertyInfo.PropertyType)
-                select propertyInfo.Name ).ToArray();
-            return colNames;
+            var propertyInfos = typeof(T).GetTypeInfo().GetProperties();
+
+            return (from propertyInfo in propertyInfos where NonNavTypesChecker.Check(propertyInfo.PropertyType) select propertyInfo.Name).ToArray();
         }
 
-        private string[,] GetValues(Type randomType,
-            IReadOnlyList<string> colNames, dynamic dbContext)
+        private string[,] GetValues<T>(IReadOnlyList<string> columnNames, dynamic dbContext) where T : class
         {
-            var table = dbContext.GetTable(randomType.ToString());
-            var ts = table.Length;
-            var numRows = ts > 50 ? 50 : ts;
-            var tableValues = new string[numRows, colNames.Count];
-            for(var i = 0; i < numRows; i++)
+            var maxNumberOfRows = 50;
+            T[] table = ((DbSet<T>)dbContext.GetTable<T>()).Take(maxNumberOfRows).ToArray();
+
+            var tableValues = new string[table.Length, columnNames.Count];
+
+            MethodInfo method = typeof(T).GetMethod("PopulateDictionary");
+            for (var i = 0; i < table.Length; i++)
             {
-                var rowValues = table[i].PopulateDictionary();
-                for(var j = 0; j < colNames.Count; j++)
-                {
-                    dynamic o = rowValues[colNames[j]];
-                    tableValues[i, j] = o == null
-                        ? ""
-                        : string.Format("{0}", o);
-                }
+                var rowValues = (Dictionary<string, dynamic>)method.Invoke(table[i], null);
+                for (var j = 0; j < columnNames.Count; j++)
+                    tableValues[i, j] = (rowValues[columnNames[j]] ?? string.Empty).ToString();
             }
+
             return tableValues;
         }
     }
