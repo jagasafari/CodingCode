@@ -4,9 +4,6 @@
 
     public class HomeController : Controller
     {
-        public IActionResult Error()
-        {
-            return View("~/Views/Shared/Error.cshtml");
-        }
+        public IActionResult Error() => View("~/Views/Shared/Error.cshtml");
     }
 }

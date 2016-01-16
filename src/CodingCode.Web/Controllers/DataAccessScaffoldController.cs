@@ -14,7 +14,7 @@ namespace CodingCode.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CodeDatabase(DataAccessViewModel dataAccessViewModel,
-            [FromServices] DbContextWrapper dbContextWrapper, [FromServices] IContextGenerator contextGenerator)
+            [FromServices] DatabaseContextWrapper dbContextWrapper, [FromServices] IContextGenerator contextGenerator)
         {
             if (!ModelState.IsValid) return View(dataAccessViewModel);
 

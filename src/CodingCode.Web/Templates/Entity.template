@@ -1,4 +1,4 @@
-        public static string TypeName = typeof(TableName).ToString();
+        public static string TypeName => nameof(TableName);
 
         public Dictionary<string, dynamic> PopulateDictionary()
         {

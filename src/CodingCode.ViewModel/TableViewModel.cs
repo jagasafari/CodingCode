@@ -1,7 +1,6 @@
-using Common.Core;
-
 namespace CodingCode.ViewModel
 {
+    using Common.Core;
     public class TableViewModel
     {
         private string[] _columnNames;

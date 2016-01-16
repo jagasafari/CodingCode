@@ -1,6 +1,6 @@
 ﻿{
   "version": "1.0.0-*",
-  "description": "CodingCode.Contracts Class Library",
+  "description": "CodingCode.Abstraction Class Library",
   "authors": [ "mika" ],
   "frameworks": {
     "dnx451": { }

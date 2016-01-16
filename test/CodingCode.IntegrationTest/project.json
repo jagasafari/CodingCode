@@ -2,6 +2,7 @@
   "version": "1.0.0-*",
   "description": "CodingCode.IntegrationTest Class Library",
   "authors": [ "mika" ],
+  
   "commands": {
     "test": "xunit.runner.dnx"
   },
@@ -9,6 +10,7 @@
     "Microsoft.Extensions.Logging": "1.0.0-rc1-final",
     "CodingCode.Web": "1.0.0-*",
     "Common.Core": "1.0.0-*",
+    "Common.ProcessExecution":"1.0.0-*",
     "xunit": "2.1.0-*",
     "xunit.runner.dnx": "2.1.0-*"
   },

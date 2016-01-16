@@ -1,5 +1,8 @@
 {
-    "ProjectToTest" : "C:\\MyGit\\CodingCode\\src\\CodingCode.Web",
-    "WebBaseUri" : "http://localhost:5000",
-    "Dnx" : "C:\\Users\\mika\\.dnx\\runtimes\\dnx-clr-win-x86.1.0.0-rc1-final\\bin\\dnx.exe"
+    "ProjectToTest": "C:\\MyGit\\CodingCode\\src\\CodingCode.Web",
+    "WebBaseUri": "http://localhost:5000",
+    "Dnx": "C:\\Users\\mika\\.dnx\\runtimes\\dnx-clr-win-x86.1.0.0-rc1-final\\bin\\dnx.exe",
+    "Dnu": "C:\\Users\\mika\\.dnx\\runtimes\\dnx-clr-win-x86.1.0.0-rc1-final\\bin\\dnu.cmd",
+    "TemplateDirectory": "C:\\MyGit\\CodingCode\\src\\CodingCode.Web\\Templates",
+    "DalParentDirectory": "C:\\MyGit\\CodingCode\\test\\TestOutput"
 }

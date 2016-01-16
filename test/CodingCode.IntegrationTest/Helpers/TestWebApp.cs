@@ -12,11 +12,12 @@
     {
         private ILongRunningExecutor _processExecutor;
         private HttpClient _client;
-        
-        public TestWebApp(ILongRunningExecutorFactory longRunningExecutorFactory, 
+        private readonly ILogger<TestWebApp> _logger;
+        public TestWebApp(ILongRunningExecutorFactory longRunningExecutorFactory,
             IOptions<TestOptions> options, ILogger<TestWebApp> logger)
         {
             var testOptions = options.Value;
+            _logger = logger;
             _processExecutor = longRunningExecutorFactory.Create(testOptions.Dnx, $"-p {testOptions.ProjectToTest} web");
 
             _client = new HttpClient
@@ -24,13 +25,18 @@
                 BaseAddress = new Uri(testOptions.WebBaseUri)
             };
         }
-        
+
         public void Dispose()
         {
+            _logger.LogCritical($"Disposing {nameof(HttpClient)} ");
             _client.Dispose();
-            _processExecutor.Dispose();
+            if (_processExecutor != null)
+            {
+                _logger.LogCritical($"disposing {nameof(ILongRunningExecutor)}");
+                _processExecutor.Dispose();
+            }
         }
-        
+
         public async Task DeployWebApplication()
         {
             HttpResponseMessage responseMessage = null;
@@ -41,17 +47,17 @@
             catch (Exception)
             {
                 if (responseMessage == null || responseMessage.IsSuccessStatusCode)
-                     _processExecutor.Execute();
+                    _processExecutor.Execute();
             }
         }
-        
+
         public async Task<HttpResponseMessage> GetAsync(string actionName) =>
             await _client.GetAsync(actionName);
 
 
-        public async Task<HttpResponseMessage> PostAsync(string formActionUrl, 
+        public async Task<HttpResponseMessage> PostAsync(string formActionUrl,
             IEnumerable<KeyValuePair<string, string>> formUrlEncodedContent) =>
                 await _client.PostAsync(formActionUrl, new FormUrlEncodedContent(formUrlEncodedContent));
-        
+
     }
 }

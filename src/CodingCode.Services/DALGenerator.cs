@@ -55,12 +55,10 @@
 
         public async Task RestoreAsync()
         {
-            await Task.Factory.StartNew(
-                () => _executorFactory.Create(_options.Dnu, "restore", x => x.Contains("Error"))
-                    .Execute());
+            await Task.Factory.StartNew(()=>_executorFactory.Create(_options.Dnu, "restore", x => x.Contains("Error")).Execute());
         }
 
-        
+
         public async Task ScaffoldAsync()
         {
             string arguments = $"ef dbcontext scaffold {GetConnectionString()} EntityFramework.MicrosoftSqlServer";
@@ -68,10 +66,11 @@
                 Task.Factory.StartNew(
                     () => _executorFactory.Create(_options.Dnx, arguments, (x) => x.Contains("error"))
                     .Execute());
-                    
+
             var contextFileName = $"{DataAccessConfiguratios.DatabaseName}Context.cs";
-            if (!File.Exists(Path.Combine(DataAccessConfiguratios.ProjectDirectory, contextFileName)))
-                throw new Exception("Scaffold failed!");
+            var contextFile = Path.Combine(DataAccessConfiguratios.ProjectDirectory, contextFileName);
+            if (!File.Exists(contextFile))
+                throw new Exception($"Scaffold failed! context file {contextFile}");
             await WrapBug(contextFileName);
         }
 
@@ -166,23 +165,18 @@
 
         public dynamic InstantiateDbContext()
         {
-            var assemblyPath =
-                Path.Combine(Directory.GetCurrentDirectory(),
+            var assemblyPath = Path.Combine(Directory.GetCurrentDirectory(),
                     "bin", "Debug", "dnx451",
                     $"{DataAccessConfiguratios.AssemblyName}.dll");
-            var typeInfos =
-                Assembly.LoadFrom(assemblyPath).DefinedTypes.ToArray();
+            var typeInfos = Assembly.LoadFrom(assemblyPath).DefinedTypes.ToArray();
 
-            foreach (
-                var typeInfo in
-                    typeInfos.Where(
-                        typeInfo => typeInfo.Name.Contains("Context")))
+            foreach (var typeInfo in typeInfos.Where(typeInfo => typeInfo.Name.Contains("Context")))
             {
                 return typeInfo.GetConstructors().Single().Invoke(null);
             }
             throw new Exception("Database context not created.");
         }
-        
+
         private string GetConnectionString()
         {
             return
@@ -219,34 +213,29 @@
 
         private string AddStaticTypeNameProperty(string entityTypeName, string propertyTemplate)
         {
-            if (
-       propertyTemplate.Contains(
-           "public static string TypeName = typeof"))
-                return
-                                        propertyTemplate.Replace("TableName", entityTypeName);
+            if(propertyTemplate.Contains("public static string TypeName => nameof"))
+                return propertyTemplate.Replace("TableName", entityTypeName);
             throw new Exception("Expected template for TypeName property");
         }
 
         private void WriteContextCastomCode(StreamWriter streamWriter,
             string[] tableNames)
         {
-            var templateFile = "Context.template";
-            var templatePath =
-                Path.Combine(DataAccessConfiguratios.TemplateDirectory, templateFile);
+            var templatePath = Path.Combine(DataAccessConfiguratios.TemplateDirectory, "Context.template");
             var customCode = File.ReadAllLines(templatePath);
-            customCode[0] = customCode[0].Replace("AssemblyName",
-                $@"""{DataAccessConfiguratios.AssemblyName}""");
+            customCode[0] = customCode[0].Replace("AssemblyName", $@"""{DataAccessConfiguratios.AssemblyName}""");
             streamWriter.WriteLine(customCode[0]);
             streamWriter.WriteLine(customCode[1]);
             streamWriter.WriteLine(customCode[2]);
 
+            streamWriter.WriteLine("            Console.WriteLine($\"!!!!!!!!!!!!!! Type of T {typeof(T).FullName}  vs \");");
             foreach (var tableName in tableNames)
             {
-                string check =
-                    $"           if (typeof(T).FullName.Equals({DataAccessConfiguratios.AssemblyName}.{tableName}.TypeName))";
+                var s=$"typeof({DataAccessConfiguratios.AssemblyName}.{tableName}).FullName";
+                streamWriter.WriteLine($"           Console.WriteLine({s});");
+                string check = $"           if (typeof(T).FullName.Equals({s}))";
                 streamWriter.WriteLine(check);
-                string returnTable =
-                    $"                 return {tableName};";
+                string returnTable = $"                 return {tableName};";
                 streamWriter.WriteLine(returnTable);
             }
             streamWriter.WriteLine(customCode[3]);

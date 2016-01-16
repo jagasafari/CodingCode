@@ -7,7 +7,6 @@ namespace CodingCode.IntegrationTest{
     public interface ITestWebApp : IDisposable {
         Task DeployWebApplication();
         Task<HttpResponseMessage> GetAsync(string actionName);
-        Task<HttpResponseMessage> PostAsync(string formActionUrl, 
-            IEnumerable<KeyValuePair<string, string>> formUrlEncodedContent);
+        Task<HttpResponseMessage> PostAsync(string formActionUrl, IEnumerable<KeyValuePair<string, string>> formUrlEncodedContent);
     }
 }

@@ -1,6 +1,6 @@
-		public string NamespaceName => AssemblyName;
+		//public string NamespaceName => AssemblyName;
         public dynamic GetTable<T>() where T:class
         {
 			
-            throw new Exception($"{typeof(T).FullName} entity type not found");
+           throw new Exception($"{typeof(T).FullName} entity type not found");
         }

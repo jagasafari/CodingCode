@@ -3,9 +3,9 @@
     using System;
     using System.Collections.Generic;
 
-    public class DbContextWrapper
+    public class DatabaseContextWrapper
     {
-        public DbContextWrapper()
+        public DatabaseContextWrapper()
         {
             DbContextDictionary = new Dictionary<string, dynamic>();
         }
